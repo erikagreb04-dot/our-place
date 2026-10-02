@@ -256,12 +256,10 @@ let catLifeTimer=null,catLifeBusy=false;
 function startCatLife(){
  const pet=document.getElementById('roomPet'); if(!pet)return;
  pet.classList.remove('walking','room-wash','room-play','room-sleep','pet-eat','pet-play','pet-pet');
- pet.style.left='47%';
- pet.style.bottom='34%';
 }
 
-function petAge(data){const born=new Date(data.created_at||Date.now());const days=Math.max(0,Math.floor((Date.now()-born.getTime())/86400000));const stage=days<120?1:days<240?2:days<365?3:4;const labels=['','щенок','подросток','юниор','взрослый пёс'];const scale=Math.min(1.18,.48+(Math.min(days,420)/420)*.70);return{days,stage,label:labels[stage],scale}}
-async function loadPet(){const{data}=await db.from('our_pet').select('*').limit(1).maybeSingle();if(!data)return;const age=petAge(data),pet=document.getElementById('roomPet');if(pet)pet.style.transform=`scale(${age.scale})`;startCatLife();if((data.stage||1)!==age.stage)db.from('our_pet').update({stage:age.stage,updated_at:new Date().toISOString()}).eq('id',data.id)}
+function petAge(data){const born=new Date(data.created_at||Date.now());const days=Math.max(0,Math.floor((Date.now()-born.getTime())/86400000));const stage=days<120?1:days<240?2:days<365?3:4;const labels=['','щенок','подросток','юниор','взрослый пёс'];const scale=Math.min(1.18,.75+(Math.min(days,420)/420)*.43);return{days,stage,label:labels[stage],scale}}
+async function loadPet(){const{data}=await db.from('our_pet').select('*').limit(1).maybeSingle();if(!data)return;const age=petAge(data),pet=document.getElementById('roomPet');if(pet)pet.style.setProperty('--dog-scale',age.scale);startCatLife();if((data.stage||1)!==age.stage)db.from('our_pet').update({stage:age.stage,updated_at:new Date().toISOString()}).eq('id',data.id)}
 async function openPet(){
  const{data}=await db.from('our_pet').select('*').limit(1).maybeSingle();if(!data)return toast('Пёс потерялся 😭');
  const name=(data.name&&data.name!=='???')?data.name:'Наш пёс',h=Math.max(0,Math.min(100,data.hunger??100)),happy=Math.max(0,Math.min(100,data.happiness??100)),affection=Math.max(0,data.affection??0),age=petAge(data);
@@ -333,7 +331,7 @@ window.addEventListener('DOMContentLoaded',()=>{calcDays();const s=localStorage.
 <style>
 /* v3: living Basenji puppy */
 .room-cat,.cat,.cat-body,.cat-head,.cat-tail,.cat-ear,.cat-eye,.cat-paw,#roomCat,#catLife{display:none!important}
-.room-dog{position:absolute;left:47%;bottom:34%;width:310px;height:190px;z-index:6;cursor:pointer;transition:transform 1.2s ease;transform-origin:center bottom;filter:drop-shadow(0 7px 8px rgba(32,15,10,.20))}
+.room-dog{position:absolute;left:66%;bottom:185px;width:310px;height:190px;z-index:6;cursor:pointer;transition:transform 1.2s ease;transform-origin:center bottom;transform:translateX(-50%) scale(var(--dog-scale,.75));filter:drop-shadow(0 7px 8px rgba(32,15,10,.20))}
 .room-dog img{width:100%;height:100%;object-fit:contain;display:block}
 .room-dog.walking img{animation:dogWalk .42s ease-in-out infinite alternate}
 .room-dog.room-sleep img{animation:dogSleep 2.2s ease-in-out infinite alternate;transform:rotate(8deg) scale(.9)}
