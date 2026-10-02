@@ -19,10 +19,12 @@
 .actions{position:absolute;z-index:6;left:14px;right:14px;bottom:98px;display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.action{border:0;min-height:86px;padding:9px 5px;border-radius:18px;background:rgba(255,248,241,.95);box-shadow:var(--shadow);color:#372622;font-size:11px}.action span{display:block;font-size:27px;margin-bottom:5px}.nav{position:absolute;z-index:7;left:10px;right:10px;bottom:10px;height:78px;padding:7px;border-radius:26px;background:rgba(42,24,22,.92);backdrop-filter:blur(14px);display:grid;grid-template-columns:repeat(5,1fr);gap:3px}.nav button{border:0;background:transparent;color:#fff4ee;border-radius:20px;font-size:9px;padding:5px 2px}.nav button span{display:block;font-size:23px;margin-bottom:2px}.nav button.active{background:rgba(164,58,78,.36);color:#ff8799}
 .modal-wrap{position:fixed;inset:0;z-index:1000;background:rgba(24,12,12,.5);display:none;align-items:flex-end;justify-content:center}.modal-wrap.show{display:flex}.modal{width:min(560px,100%);max-height:82svh;overflow:auto;background:#fff8f1;border-radius:30px 30px 0 0;padding:20px 18px calc(24px + env(safe-area-inset-bottom));box-shadow:0 -15px 50px rgba(0,0,0,.25)}.handle{width:46px;height:5px;background:#d7c5bd;border-radius:5px;margin:0 auto 14px}.modal h2{margin:0 0 6px;font:26px Georgia,serif}.sub{color:#88736c;font-size:13px;margin-bottom:16px}.close{float:right;border:0;background:#eaded8;width:34px;height:34px;border-radius:50%}.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}.pick{border:2px solid transparent;background:#fff;border-radius:16px;padding:10px 4px;font-size:25px}.pick.sel{border-color:#b64d63;background:#fff0f2}.field{width:100%;border:0;outline:0;background:#fff;padding:14px;border-radius:16px;margin-top:10px}.primary{width:100%;border:0;border-radius:17px;padding:14px;margin-top:12px;background:#9f334d;color:white;font-weight:700}.choices{display:grid;grid-template-columns:1fr 1fr;gap:8px}.choice{border:0;border-radius:16px;padding:13px 8px;background:#fff}.gift-row{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}.gift{border:0;background:#fff;border-radius:16px;padding:12px 4px;font-size:25px}.note{background:#fff0cf;padding:14px;border-radius:4px;box-shadow:0 5px 15px rgba(0,0,0,.08);margin:9px 0;transform:rotate(-.4deg)}.wish{background:#fff;padding:12px;border-radius:14px;margin:8px 0}.room-shop{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.room-item{border:0;border-radius:18px;background:#fff;padding:15px 6px}.room-item span{display:block;font-size:32px}.earned{margin:12px 0;padding:12px;border-radius:15px;background:#f4e5dc;text-align:center}.float-item{position:absolute;z-index:3;font-size:38px;filter:drop-shadow(0 4px 5px rgba(0,0,0,.25));pointer-events:none}.toast{position:fixed;z-index:2000;left:50%;bottom:105px;transform:translate(-50%,20px);opacity:0;background:#402521;color:#fff;padding:11px 17px;border-radius:30px;font-size:12px;transition:.25s;pointer-events:none}.toast.show{opacity:1;transform:translate(-50%,0)}
 
+.pet-card{position:absolute;z-index:5;right:14px;bottom:196px;width:230px;padding:12px 14px;border:0;border-radius:20px;background:var(--glass);box-shadow:var(--shadow);display:flex;gap:10px;align-items:center;color:#2f211f;text-align:left}.pet-icon{font-size:38px}.pet-card b{font-size:14px}.pet-card small{display:block;color:#786762;margin-top:3px}
 .game-progress{height:9px;background:#eaded8;border-radius:99px;overflow:hidden;margin:12px 0 18px}.game-progress i{display:block;height:100%;background:#9f334d;border-radius:99px}
 .game-turn{padding:14px;border-radius:18px;background:#f4e5dc;margin:10px 0 14px;text-align:center}.game-turn strong{display:block;font-size:16px;margin-bottom:3px}
 .game-options{display:grid;grid-template-columns:1fr 1fr;gap:10px}.game-option{border:2px solid transparent;border-radius:20px;background:#fff;padding:15px 8px;min-height:105px;color:#372622}.game-option span{display:block;font-size:34px;margin-bottom:7px}
 .game-history{margin-top:18px}.game-history .done{background:#fff;padding:10px 12px;border-radius:14px;margin:7px 0;font-size:12px}.game-wait{font-size:54px;text-align:center;padding:12px 0}.game-finish{text-align:center;padding:15px}.game-finish .house{font-size:80px}
+.pet-big{text-align:center;font-size:92px;line-height:1.1;margin:10px 0}.pet-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.pet-actions button{border:0;border-radius:17px;background:#fff;padding:13px 5px;font-size:12px}.pet-actions span{display:block;font-size:28px;margin-bottom:4px}
 
 @media(min-width:561px){body{background:#160e0d}.scene{box-shadow:0 0 70px #000}}
 </style>
@@ -37,9 +39,9 @@
 <div class="people"><img id="usImg" src="us.png" onerror="this.onerror=null;this.src='us'" alt="Эрика и Оливер"></div>
 <button class="status erika" onclick="openStatus('Эрика')"><span class="emo" id="erikaMood">🤍</span><b>Эрика</b><span id="erikaText">нажми и оставь статус</span></button>
 <button class="status oliver" onclick="openStatus('Оливер')"><span class="emo" id="oliverMood">🤍</span><b>Оливер</b><span id="oliverText">нажми и оставь статус</span></button>
-<button class="plant-card" onclick="openPlant()"><span class="plant-icon" id="plantIcon">🌱</span><span><b>Наше растение ♡</b><small id="plantText">Растёт вместе с вашим домом</small><span class="bar"><i id="plantBar"></i></span></span></button>
-<div class="actions"><button class="action" onclick="openMood()"><span>🙂</span>Моё настроение</button><button class="action" onclick="openNeed()"><span>❤️</span>Что мне сейчас нужно</button><button class="action" onclick="openSend()"><span>💌</span>Отправить</button><button class="action" onclick="openRoom()"><span>🎁</span>Добавить в дом</button></div>
-<nav class="nav"><button class="active" onclick="home()"><span>🏠</span>Дом</button><button onclick="openPhotos()"><span>🖼️</span>Наши фото</button><button onclick="openNotes()"><span>📝</span>Записки</button><button onclick="openGame()"><span>🎮</span>Игра</button><button onclick="openPlant()"><span>🌱</span>Растение</button></nav>
+<button class="pet-card" onclick="openPet()"><span class="pet-icon" id="petIcon">🐈</span><span><b id="petNameCard">Наш кот ♡</b><small id="petText">Живёт вместе с вами</small></span></button>
+<div class="actions"><button class="action" onclick="openMood()"><span>🙂</span>Моё настроение</button><button class="action" onclick="openNeed()"><span>❤️</span>Что мне сейчас нужно</button><button class="action" onclick="openSend()"><span>💌</span>Отправить</button><button class="action" onclick="openGame()"><span>🎮</span>Строить дом</button></div>
+<nav class="nav"><button class="active" onclick="home()"><span>🏠</span>Дом</button><button onclick="openPhotos()"><span>🖼️</span>Наши фото</button><button onclick="openNotes()"><span>📝</span>Записки</button><button onclick="openGame()"><span>🎮</span>Игра</button><button onclick="openPet()"><span>🐈</span>Питомец</button></nav>
 </main></div>
 <div class="modal-wrap" id="modalWrap" onclick="backdrop(event)"><div class="modal" id="modal"><div class="handle"></div><button class="close" onclick="closeModal()">✕</button><div id="modalBody"></div></div></div>
 <div class="toast" id="toast"></div>
@@ -110,47 +112,110 @@ const HOUSE_OPTIONS = {
     ['❤️','Бордовая']
   ]
 };
-
 async function openGame(){
   const {data,error}=await db.from('house_game').select('*').order('step',{ascending:true});
   if(error){console.error(error);return toast('Игра не загрузилась 😭')}
-  const steps=data||[], current=steps.find(x=>!x.choice), completed=steps.filter(x=>x.choice);
+  const steps=data||[];
+  const current=steps.find(x=>!x.choice);
+  const completed=steps.filter(x=>x.choice);
+  if(!steps.length)return show(`<h2>Строим наш дом 🏡</h2><div class="sub">Этапы игры пока не найдены в базе.</div>`);
   if(!current){
-    show(`<h2>Первый этап готов 🏡</h2><div class="sub">Вы вместе закончили основу дома. Следом откроем комнаты и начнём оформлять их по очереди.</div><div class="game-finish"><div class="house">🏡</div><b>Ваш дом уже состоит из ${completed.length} совместных решений ♡</b></div>${gameHistory(completed)}`);
+    show(`<h2>Дом построен 🏡</h2><div class="sub">Первый этап закончен вместе. Дальше добавим комнаты: гостиную, спальню, кухню и декор.</div><div class="game-finish"><div class="house">🏡</div><b>${completed.length} совместных решений ♡</b></div>${gameHistory(completed)}`);
     return;
   }
-  const progress=Math.round((completed.length/steps.length)*100), mine=current.player===currentUser, options=HOUSE_OPTIONS[current.step]||[];
-  show(`<h2>Строим наш дом 🏡</h2><div class="sub">${esc(current.category)} · шаг ${current.step} из ${steps.length}</div><div class="game-progress"><i style="width:${progress}%"></i></div><div class="game-turn"><strong>${mine?'Сейчас твой ход ♡':'Сейчас ход '+esc(current.player)+' ♡'}</strong>${mine?'Твой выбор станет частью вашего общего дома.':'Как только '+esc(current.player)+' выберет вариант, откроется следующий шаг.'}</div><h3 style="margin:14px 0">${esc(current.question)}</h3>${mine?`<div class="game-options">${options.map((o,i)=>`<button class="game-option" onclick="chooseHouseOption(${current.step},${i})"><span>${o[0]}</span>${esc(o[1])}</button>`).join('')}</div>`:`<div class="game-wait">⏳♡</div><div class="sub" style="text-align:center">Ждём ${esc(current.player)}…</div>`}${completed.length?gameHistory(completed):''}`);
+  const progress=Math.round((completed.length/steps.length)*100);
+  const mine=current.player===currentUser;
+  const options=HOUSE_OPTIONS[current.step]||[];
+  show(`<h2>Строим наш дом 🏡</h2>
+    <div class="sub">${esc(current.category)} · шаг ${current.step} из ${steps.length}</div>
+    <div class="game-progress"><i style="width:${progress}%"></i></div>
+    <div class="game-turn"><strong>${mine?'Сейчас твой ход ♡':'Сейчас ход '+esc(current.player)+' ♡'}</strong>
+    ${mine?'Выбери то, что нравится тебе. Следующее решение будет за '+partner()+'.':'Ждём выбор. После него откроется следующий этап.'}</div>
+    <h3 style="margin:14px 0">${esc(current.question)}</h3>
+    ${mine
+      ? `<div class="game-options">${options.map((o,i)=>`<button class="game-option" onclick="chooseHouseOption(${current.step},${i})"><span>${o[0]}</span>${esc(o[1])}</button>`).join('')}</div>`
+      : `<div class="game-wait">⏳♡</div><div class="sub" style="text-align:center">Ждём ${esc(current.player)}…</div>`}
+    ${completed.length?gameHistory(completed):''}`);
 }
 function gameHistory(completed){
-  return `<div class="game-history"><b>Что вы уже решили</b>${completed.slice().reverse().map(x=>`<div class="done">✓ <b>${esc(x.question)}</b><br>${esc(x.choice)} · выбрал${x.chosen_by==='Эрика'?'а':''} ${esc(x.chosen_by||x.player)}</div>`).join('')}</div>`;
+  return `<div class="game-history"><b>Ваш дом уже такой:</b>${completed.slice().reverse().map(x=>`<div class="done">✓ <b>${esc(x.question)}</b><br>${esc(x.choice)} · ${esc(x.chosen_by||x.player)}</div>`).join('')}</div>`;
 }
 async function chooseHouseOption(step,index){
-  const option=(HOUSE_OPTIONS[step]||[])[index]; if(!option)return;
-  const {data:row,error:readError}=await db.from('house_game').select('*').eq('step',step).single();
-  if(readError||!row)return toast('Не получилось открыть этот шаг 😭');
+  const option=(HOUSE_OPTIONS[step]||[])[index];
+  if(!option)return;
+  const {data:row,error:rerr}=await db.from('house_game').select('*').eq('step',step).single();
+  if(rerr||!row)return toast('Не получилось открыть шаг 😭');
   if(row.choice)return toast('Этот выбор уже сделан ♡');
   if(row.player!==currentUser)return toast('Сейчас ход '+row.player+' ♡');
-  const {error}=await db.from('house_game').update({choice:option[0]+' '+option[1],chosen_by:currentUser,chosen_at:new Date().toISOString()}).eq('step',step).is('choice',null);
+  const {error}=await db.from('house_game').update({
+    choice:option[0]+' '+option[1],
+    chosen_by:currentUser,
+    chosen_at:new Date().toISOString()
+  }).eq('step',step).is('choice',null);
   if(error){console.error(error);return toast('Не сохранилось 😭')}
-  toast('Выбор сохранён ♡'); await openGame();
+  toast('Выбрано ♡ Теперь ход '+partner());
+  await openGame();
 }
 
-const SHOP=[['🪴','растение'],['🕯️','свеча'],['🧸','мишка'],['🪩','диско-шар'],['🐈','кот'],['🖼️','картина'],['💡','лампа'],['🌷','цветы'],['🎮','игра']];
-async function openRoom(){const {data}=await db.from('room_items').select('*');const owned=(data||[]).map(x=>x.item);show(`<h2>Наш дом 🏠</h2><div class="sub">Вы добавляете вещи вместе. Всё выбранное остаётся в вашей комнате.</div><div class="earned">В доме уже <b>${owned.length}</b> предметов ♡</div><div class="room-shop">${SHOP.map(x=>`<button class="room-item" ${owned.includes(x[0])?'disabled':''} onclick="addRoomItem('${x[0]}')"><span>${x[0]}</span>${x[1]}${owned.includes(x[0])?'<br>✓':''}</button>`).join('')}</div>`)}
-async function addRoomItem(item){const pos=roomPosition(item);const {error}=await db.from('room_items').insert({added_by:currentUser,item,position_x:pos.x,position_y:pos.y});if(error)return toast('Не получилось добавить 😭');await growPlant(8);await loadRoom();toast(item+' теперь живёт у вас дома ♡');openRoom()}
-function roomPosition(item){const p={'🪴':[82,52],'🕯️':[18,66],'🧸':[68,62],'🪩':[72,18],'🐈':[22,54],'🖼️':[76,31],'💡':[13,43],'🌷':[30,63],'🎮':[57,66]}[item]||[50,50];return{x:p[0],y:p[1]}}
-async function loadRoom(){document.querySelectorAll('.float-item').forEach(x=>x.remove());const {data}=await db.from('room_items').select('*');(data||[]).forEach(x=>{const e=document.createElement('div');e.className='float-item';e.textContent=x.item;e.style.left=(x.position_x||50)+'%';e.style.top=(x.position_y||50)+'%';document.getElementById('scene').appendChild(e)})}
-async function growPlant(n){const {data}=await db.from('our_pet').select('*').limit(1).maybeSingle();if(!data)return;await db.from('our_pet').update({growth:Math.min(100,(data.growth||0)+n),updated_at:new Date().toISOString()}).eq('id',data.id)}
-async function loadPlant(){const {data}=await db.from('our_pet').select('*').limit(1).maybeSingle();const g=Math.min(100,data?.growth||0);plantBar.style.width=g+'%';plantIcon.textContent=g<25?'🌱':g<60?'🪴':g<90?'🌿':'🌸';plantText.textContent=g<100?`Забота: ${g}% — добавляйте жизнь в дом`:'Оно расцвело вместе с вами ♡'}
-async function openPlant(){await loadPlant();show(`<h2>Наше растение 🌱</h2><div class="sub">Оно растёт, когда вы вместе наполняете ваш дом.</div><div style="font-size:90px;text-align:center">${plantIcon.textContent}</div><div class="earned">${plantText.textContent}</div><button class="primary" onclick="carePlant()">💧 Позаботиться сегодня</button>`)}
-async function carePlant(){await growPlant(3);await loadPlant();toast('Полили ♡');openPlant()}
+async function loadPet(){
+  const {data}=await db.from('our_pet').select('*').limit(1).maybeSingle();
+  if(!data)return;
+  const name=(data.name&&data.name!=='???')?data.name:'Наш кот';
+  const h=Math.max(0,Math.min(100,data.hunger??100));
+  const happy=Math.max(0,Math.min(100,data.happiness??100));
+  if(document.getElementById('petNameCard'))petNameCard.textContent=name+' ♡';
+  if(document.getElementById('petText'))petText.textContent=`Сытость ${h}% · счастье ${happy}%`;
+}
+async function openPet(){
+  const {data}=await db.from('our_pet').select('*').limit(1).maybeSingle();
+  if(!data)return toast('Кот потерялся 😭');
+  const name=(data.name&&data.name!=='???')?data.name:'Наш кот';
+  const h=Math.max(0,Math.min(100,data.hunger??100));
+  const happy=Math.max(0,Math.min(100,data.happiness??100));
+  const affection=Math.max(0,data.affection??0);
+  show(`<h2>${esc(name)} 🐈</h2><div class="sub">Ваш общий питомец. Заботиться о нём можете оба.</div>
+    <div class="pet-big" id="petBig">🐈</div>
+    <div class="earned">🍗 Сытость <b>${h}%</b> · ❤️ Счастье <b>${happy}%</b><br>💕 Привязанность <b>${affection}</b></div>
+    <div class="pet-actions">
+      <button onclick="petAction('feed')"><span>🥣</span>Покормить</button>
+      <button onclick="petAction('pet')"><span>🤍</span>Погладить</button>
+      <button onclick="petAction('play')"><span>🧶</span>Поиграть</button>
+    </div>
+    <input id="petNameInput" class="field" maxlength="20" placeholder="Имя кота" value="${data.name==='???'?'':esc(data.name||'')}">
+    <button class="primary" onclick="savePetName()">Сохранить имя ♡</button>`);
+}
+async function petAction(type){
+  const {data}=await db.from('our_pet').select('*').limit(1).maybeSingle();
+  if(!data)return;
+  let hunger=data.hunger??100,happiness=data.happiness??100,affection=data.affection??0;
+  let icon='🐈',msg='';
+  if(type==='feed'){hunger=Math.min(100,hunger+15);affection+=1;icon='😺';msg='Ням ♡'}
+  if(type==='pet'){happiness=Math.min(100,happiness+10);affection+=2;icon='😻';msg='Муррр ♡'}
+  if(type==='play'){happiness=Math.min(100,happiness+15);hunger=Math.max(0,hunger-3);affection+=2;icon='🐈‍⬛';msg='Играем! 🧶'}
+  await db.from('our_pet').update({hunger,happiness,affection,last_fed:type==='feed'?new Date().toISOString():data.last_fed,last_played:type==='play'?new Date().toISOString():data.last_played,updated_at:new Date().toISOString()}).eq('id',data.id);
+  const e=document.getElementById('petBig');if(e)e.textContent=icon;
+  toast(msg);setTimeout(()=>openPet(),900);loadPet();
+}
+async function savePetName(){
+  const name=document.getElementById('petNameInput').value.trim();
+  if(!name)return toast('Дайте коту имя ♡');
+  const {data}=await db.from('our_pet').select('id').limit(1).maybeSingle();
+  if(!data)return;
+  const {error}=await db.from('our_pet').update({name,pet_type:'cat',updated_at:new Date().toISOString()}).eq('id',data.id);
+  if(error)return toast('Имя не сохранилось 😭');
+  toast('Теперь его зовут '+name+' ♡');loadPet();openPet();
+}
 function openPhotos(){show(`<h2>Наши фото 📸</h2><div class="sub">Фотостена будет следующим шагом. Для личных фото сначала сделаем безопасное хранение, чтобы они не лежали публично в GitHub.</div>`)}
 function home(){closeModal()}
 function esc(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 async function checkNeed(){const {data}=await db.from('needs').select('*').eq('person',partner()).eq('day',localDay()).maybeSingle();if(data)toast(partner()+' сейчас хочет: '+data.need)}
-async function loadAll(){calcDays();await Promise.all([loadMoods(),loadRoom(),loadPlant()]);setTimeout(checkNeed,700)}
-function startRealtime(){db.channel('our-place-v2').on('postgres_changes',{event:'*',schema:'public',table:'moods'},loadMoods).on('postgres_changes',{event:'*',schema:'public',table:'room_items'},()=>{loadRoom();loadPlant()}).on('postgres_changes',{event:'*',schema:'public',table:'our_pet'},loadPlant).on('postgres_changes',{event:'*',schema:'public',table:'house_game'},()=>{if(modalWrap.classList.contains('show')&&modalBody.textContent.includes('Строим наш дом'))openGame()}).on('postgres_changes',{event:'INSERT',schema:'public',table:'gifts'},p=>{if(p.new.receiver===currentUser)toast('Для тебя '+p.new.gift+' 💌')}).subscribe()}
+async function loadAll(){calcDays();await Promise.all([loadMoods(),loadPet()]);setTimeout(checkNeed,700)}
+function startRealtime(){db.channel('our-place-v3')
+.on('postgres_changes',{event:'*',schema:'public',table:'moods'},loadMoods)
+.on('postgres_changes',{event:'*',schema:'public',table:'our_pet'},loadPet)
+.on('postgres_changes',{event:'*',schema:'public',table:'house_game'},()=>{if(modalWrap.classList.contains('show')&&modalBody.textContent.includes('Строим наш дом'))openGame()})
+.on('postgres_changes',{event:'INSERT',schema:'public',table:'gifts'},p=>{if(p.new.receiver===currentUser)toast('Для тебя '+p.new.gift+' 💌')})
+.subscribe()}
 window.addEventListener('DOMContentLoaded',()=>{calcDays();const s=localStorage.getItem('ourPlaceUser');if(s==='Эрика'||s==='Оливер')chooseUser(s)})
 </script>
 </body>
