@@ -257,7 +257,7 @@ function startCatLife(){
  const pet=document.getElementById('roomPet'); if(!pet)return;
  pet.classList.remove('walking','room-wash','room-play','room-sleep','pet-eat','pet-play','pet-pet');
  pet.style.left='47%';
- pet.style.bottom='36%';
+ pet.style.bottom='34%';
 }
 
 function petAge(data){const born=new Date(data.created_at||Date.now());const days=Math.max(0,Math.floor((Date.now()-born.getTime())/86400000));const stage=days<120?1:days<240?2:days<365?3:4;const labels=['','щенок','подросток','юниор','взрослый пёс'];const scale=Math.min(1.18,.48+(Math.min(days,420)/420)*.70);return{days,stage,label:labels[stage],scale}}
