@@ -64,7 +64,49 @@ async function saveNote(){const m=document.getElementById('noteText').value.trim
 async function openWishes(){const {data}=await db.from('wishes').select('*').order('created_at',{ascending:false});show(`<h2>Банка желаний 🫙</h2><div class="sub">Сюда кидаем то, что хотим сделать вместе.</div><input id="wishText" class="field" maxlength="120" placeholder="Например: ночью поехать к океану"><button class="primary" onclick="saveWish()">Добавить желание</button><button class="primary" style="background:#5d3a31" onclick="randomWish()">🎲 Вытянуть случайное</button><div id="wishList">${(data||[]).map(w=>`<div class="wish">♡ ${esc(w.wish)}</div>`).join('')||'<div class="sub">Банка пока пустая.</div>'}</div>`)}
 async function saveWish(){const w=document.getElementById('wishText').value.trim();if(!w)return;const {error}=await db.from('wishes').insert({person:currentUser,wish:w});if(error)return toast('Не сохранилось');toast('Желание в банке ♡');openWishes()}
 async function randomWish(){const {data}=await db.from('wishes').select('*').eq('completed',false);if(!data?.length)return toast('Сначала добавьте желания');const w=data[Math.floor(Math.random()*data.length)];document.getElementById('wishList').innerHTML=`<div class="earned">🎲 Сегодня выпало:<br><b>${esc(w.wish)}</b></div>`}
-const SHOP=[['🪴','растение'],['🕯️','свеча'],['🧸','мишка'],['🪩','диско-шар'],['🐈','кот'],['🖼️','картина'],['💡','лампа'],['🌷','цветы'],['🎮','игра']];
+const HOUSE_OPTIONS = {
+  1: [
+    ['🏡','Уютный коттедж'],
+    ['🏠','Современный дом'],
+    ['🏘️','Таунхаус'],
+    ['🏚️','Старый дом с характером']
+  ],
+
+  2: [
+    ['🌊','У океана'],
+    ['🌲','Среди леса'],
+    ['⛰️','В горах'],
+    ['🌆','Рядом с городом']
+  ],
+
+  3: [
+    ['🤍','Тёплый кремовый'],
+    ['🧱','Красный кирпич'],
+    ['🌿','Приглушённый зелёный'],
+    ['🖤','Тёмный графитовый']
+  ],
+
+  4: [
+    ['🏠','Классическая черепица'],
+    ['🪵','Тёмная деревянная'],
+    ['⬛','Современная плоская'],
+    ['🌿','Зелёная крыша']
+  ],
+
+  5: [
+    ['🪟','Большие панорамные'],
+    ['✨','Арочные'],
+    ['🏡','Маленькие уютные'],
+    ['🤎','Деревянные']
+  ],
+
+  6: [
+    ['🚪','Деревянная'],
+    ['🌿','Зелёная'],
+    ['🖤','Чёрная современная'],
+    ['❤️','Бордовая']
+  ]
+};const SHOP=[['🪴','растение'],['🕯️','свеча'],['🧸','мишка'],['🪩','диско-шар'],['🐈','кот'],['🖼️','картина'],['💡','лампа'],['🌷','цветы'],['🎮','игра']];
 async function openRoom(){const {data}=await db.from('room_items').select('*');const owned=(data||[]).map(x=>x.item);show(`<h2>Наш дом 🏠</h2><div class="sub">Вы добавляете вещи вместе. Всё выбранное остаётся в вашей комнате.</div><div class="earned">В доме уже <b>${owned.length}</b> предметов ♡</div><div class="room-shop">${SHOP.map(x=>`<button class="room-item" ${owned.includes(x[0])?'disabled':''} onclick="addRoomItem('${x[0]}')"><span>${x[0]}</span>${x[1]}${owned.includes(x[0])?'<br>✓':''}</button>`).join('')}</div>`)}
 async function addRoomItem(item){const pos=roomPosition(item);const {error}=await db.from('room_items').insert({added_by:currentUser,item,position_x:pos.x,position_y:pos.y});if(error)return toast('Не получилось добавить 😭');await growPlant(8);await loadRoom();toast(item+' теперь живёт у вас дома ♡');openRoom()}
 function roomPosition(item){const p={'🪴':[82,52],'🕯️':[18,66],'🧸':[68,62],'🪩':[72,18],'🐈':[22,54],'🖼️':[76,31],'💡':[13,43],'🌷':[30,63],'🎮':[57,66]}[item]||[50,50];return{x:p[0],y:p[1]}}
