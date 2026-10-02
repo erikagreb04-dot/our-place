@@ -66,8 +66,9 @@
 <button class="status erika" onclick="openStatus('Эрика')"><span class="emo" id="erikaMood">🤍</span><b>Эрика</b><span id="erikaText">нажми и оставь статус</span></button>
 <button class="status oliver" onclick="openStatus('Оливер')"><span class="emo" id="oliverMood">🤍</span><b>Оливер</b><span id="oliverText">нажми и оставь статус</span></button>
 
-<div id="roomPet" class="room-pet pet-idle" onclick="openPet()" aria-label="Наш пёс">
-<div class="pet-heartfx">♡</div><div class="cat-art"><div class="cat-tail"></div><div class="cat-body"></div><div class="cat-head"><i class="ear e1"></i><i class="ear e2"></i><i class="eye eye1"></i><i class="eye eye2"></i><i class="nose"></i></div><div class="cat-paw p1"></div><div class="cat-paw p2"></div></div><div class="pet-prop" id="petProp"></div></div><div class="actions"><button class="action" onclick="openMood()"><span>🙂</span>Моё настроение</button><button class="action" onclick="openNeed()"><span>❤️</span>Что мне сейчас нужно</button><button class="action" onclick="openSend()"><span>💌</span>Отправить</button><button class="action" onclick="openGame()"><span>🎮</span>Строить дом</button></div>
+<div id="roomPet" class="room-dog" onclick="openPet()" aria-label="Наш пёс">
+<img id="roomDogImg" src="basenji-room.png" alt="Щенок басенджи"><div class="pet-prop" id="petProp"></div>
+</div><div class="actions"><button class="action" onclick="openMood()"><span>🙂</span>Моё настроение</button><button class="action" onclick="openNeed()"><span>❤️</span>Что мне сейчас нужно</button><button class="action" onclick="openSend()"><span>💌</span>Отправить</button><button class="action" onclick="openGame()"><span>🎮</span>Строить дом</button></div>
 <nav class="nav"><button class="active" onclick="home()"><span>🏠</span>Дом</button><button onclick="openPhotos()"><span>🖼️</span>Наши фото</button><button onclick="openNotes()"><span>📝</span>Записки</button><button onclick="openGame()"><span>🎮</span>Игра</button><button onclick="openPet()"><span>🐕</span>Питомец</button></nav>
 </main></div>
 <div class="modal-wrap" id="modalWrap" onclick="backdrop(event)"><div class="modal" id="modal"><div class="handle"></div><button class="close" onclick="closeModal()">✕</button><div id="modalBody"></div></div></div>
@@ -209,14 +210,14 @@ function startCatLife(){
  catLifeTimer=setTimeout(run,1800);
 }
 
-function petAge(data){const born=new Date(data.created_at||Date.now());const days=Math.max(0,Math.floor((Date.now()-born.getTime())/86400000));const stage=days<60?1:days<150?2:days<270?3:4;const labels=['','щенок','подросток','юниор','взрослый пёс'];return{days,stage,label:labels[stage],scale:Math.min(1.18,.64+days*.0018)}}
+function petAge(data){const born=new Date(data.created_at||Date.now());const days=Math.max(0,Math.floor((Date.now()-born.getTime())/86400000));const stage=days<120?1:days<240?2:days<365?3:4;const labels=['','щенок','подросток','юниор','взрослый пёс'];const scale=Math.min(1.18,.48+(Math.min(days,420)/420)*.70);return{days,stage,label:labels[stage],scale}}}
 async function loadPet(){const{data}=await db.from('our_pet').select('*').limit(1).maybeSingle();if(!data)return;const age=petAge(data),pet=document.getElementById('roomPet');if(pet)pet.style.transform=`scale(${age.scale})`;startCatLife();if((data.stage||1)!==age.stage)db.from('our_pet').update({stage:age.stage,updated_at:new Date().toISOString()}).eq('id',data.id)}
 async function openPet(){
  const{data}=await db.from('our_pet').select('*').limit(1).maybeSingle();if(!data)return toast('Пёс потерялся 😭');
  const name=(data.name&&data.name!=='???')?data.name:'Наш пёс',h=Math.max(0,Math.min(100,data.hunger??100)),happy=Math.max(0,Math.min(100,data.happiness??100)),affection=Math.max(0,data.affection??0),age=petAge(data);
  show(`<h2>${esc(name)} ♡</h2><div class="sub">Ваш басенджи · растёт вместе с вами.</div>
  <div class="pet-stage">День ${age.days+1} · ${age.label}</div>
- <div class="pet-dog-photo" id="petDogPhoto"><img src="basenji.png" alt="Щенок басенджи"></div>
+ <div class="pet-scene" id="petDogPhoto"><img id="petSceneImg" src="basenji-idle.png" alt="Щенок басенджи"><div class="hand">🫳🏻</div></div>
  <div id="petActionNote" class="pet-action-note">Сейчас отдыхает рядом с вами ♡</div>
  <div class="earned">🥣 Сытость <b>${h}%</b> · ❤️ Счастье <b>${happy}%</b><br>💕 Привязанность <b>${affection}</b></div>
  <div class="pet-actions"><button onclick="petAction('feed')"><span>🥣</span>Покормить</button><button onclick="petAction('pet')"><span>🤍</span>Погладить</button><button onclick="petAction('play')"><span>🧶</span>Поиграть</button></div>
@@ -227,11 +228,11 @@ function animateRoomPet(type){const pet=document.getElementById('roomPet'),prop=
 async function petAction(type){
  const{data}=await db.from('our_pet').select('*').limit(1).maybeSingle();if(!data)return;
  let hunger=data.hunger??100,happiness=data.happiness??100,affection=data.affection??0;
- const dog=document.getElementById('petDogPhoto'),note=document.getElementById('petActionNote');if(!dog)return;
- dog.classList.remove('feed','pet','play');let duration=7000;
- if(type==='feed'){hunger=Math.min(100,hunger+15);affection+=1;dog.classList.add('feed');if(note)note.textContent='Ест из миски… ням ♡';duration=8000}
- if(type==='pet'){happiness=Math.min(100,happiness+10);affection+=2;dog.classList.add('pet');if(note)note.textContent='Прижимается к руке и довольно мурчит по-собачьи ♡';duration=7000}
- if(type==='play'){happiness=Math.min(100,happiness+15);hunger=Math.max(0,hunger-3);affection+=2;dog.classList.add('play');if(note)note.textContent='Играет и тянет игрушку ♡';duration=9000}
+ const dog=document.getElementById('petDogPhoto'),img=document.getElementById('petSceneImg'),note=document.getElementById('petActionNote');if(!dog||!img)return;
+ dog.classList.remove('feed','pet','play','action');let duration=7000;
+ if(type==='feed'){hunger=Math.min(100,hunger+15);affection+=1;dog.classList.add('feed','action');img.src='basenji-eat.png';if(note)note.textContent='Подбежал к миске и кушает ♡';duration=8000}
+ if(type==='pet'){happiness=Math.min(100,happiness+10);affection+=2;dog.classList.add('pet','action');img.src='basenji-pet.png';if(note)note.textContent='Прижимается к руке, закрывает глазки и виляет хвостом ♡';duration=7000}
+ if(type==='play'){happiness=Math.min(100,happiness+15);hunger=Math.max(0,hunger-3);affection+=2;dog.classList.add('play','action');img.src='basenji-play.png';if(note)note.textContent='Носится с игрушкой и зовёт играть ♡';duration=9000}
  catLifeBusy=true;animateRoomPet(type);
  await db.from('our_pet').update({pet_type:'basenji',hunger,happiness,affection,last_fed:type==='feed'?new Date().toISOString():data.last_fed,last_played:type==='play'?new Date().toISOString():data.last_played,updated_at:new Date().toISOString()}).eq('id',data.id);
  setTimeout(()=>{catLifeBusy=false;if(document.getElementById('petDogPhoto'))openPet();loadPet()},duration);
@@ -254,7 +255,23 @@ window.addEventListener('DOMContentLoaded',()=>{calcDays();const s=localStorage.
 </html>
 
 <style>
-/* v2: remove the old cartoon cat completely */
-.room-cat,.cat,.cat-body,.cat-head,.cat-tail,.cat-ear,.cat-eye,.cat-paw,
-#roomCat,#catLife,#roomPet { display:none !important; }
+/* v3: living Basenji puppy */
+.room-cat,.cat,.cat-body,.cat-head,.cat-tail,.cat-ear,.cat-eye,.cat-paw,#roomCat,#catLife{display:none!important}
+.room-dog{position:absolute;left:58%;bottom:23%;width:115px;height:115px;z-index:6;cursor:pointer;transition:left 4.8s ease-in-out,bottom 2s ease,transform .8s ease;transform-origin:center bottom;filter:drop-shadow(0 8px 8px rgba(32,15,10,.28))}
+.room-dog img{width:100%;height:100%;object-fit:contain;display:block}
+.room-dog.walking img{animation:dogWalk .42s ease-in-out infinite alternate}
+.room-dog.room-sleep img{animation:dogSleep 2.2s ease-in-out infinite alternate;transform:rotate(8deg) scale(.9)}
+.room-dog.room-play img{animation:dogPlayRoom .45s ease-in-out infinite alternate}
+.room-dog.room-wash img{animation:dogLook .8s ease-in-out infinite alternate}
+.room-dog.pet-eat img{animation:dogEatRoom .5s ease-in-out infinite alternate}
+.room-dog.pet-pet img{animation:dogPetRoom .65s ease-in-out infinite alternate}
+.room-dog.pet-play img{animation:dogPlayRoom .38s ease-in-out infinite alternate}
+.room-dog .pet-prop{position:absolute;left:50%;bottom:-4px;font-size:28px;transform:translateX(-50%);filter:none}
+@keyframes dogWalk{to{transform:translateY(-6px) rotate(1.5deg)}}@keyframes dogSleep{to{transform:rotate(8deg) scale(.92) translateY(2px)}}@keyframes dogPlayRoom{to{transform:translateY(-10px) rotate(-3deg)}}@keyframes dogLook{to{transform:rotate(-4deg)}}@keyframes dogEatRoom{to{transform:translateY(9px) rotate(2deg)}}@keyframes dogPetRoom{to{transform:translateX(-5px) rotate(-3deg) scale(1.03)}}
+.pet-scene{width:100%;max-width:360px;height:245px;border-radius:28px;overflow:hidden;margin:8px auto 12px;background:#efe2d8;position:relative;box-shadow:0 8px 24px rgba(55,31,26,.12)}
+.pet-scene img{width:100%;height:100%;object-fit:cover;display:block;transition:.25s}
+.pet-scene.action img{animation:petSceneMove .55s ease-in-out infinite alternate}
+.pet-scene .hand{display:none;position:absolute;right:16%;top:10%;font-size:58px;transform:rotate(-25deg);animation:handPet .6s ease-in-out infinite alternate}
+.pet-scene.pet .hand{display:block}
+@keyframes petSceneMove{to{transform:scale(1.035) translateY(3px)}}@keyframes handPet{to{transform:rotate(-25deg) translate(-8px,13px)}}
 </style>
