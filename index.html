@@ -348,5 +348,17 @@ window.addEventListener('DOMContentLoaded',()=>{calcDays();const s=localStorage.
 .pet-scene .hand{display:none;position:absolute;right:16%;top:10%;font-size:58px;transform:rotate(-25deg);animation:handPet .6s ease-in-out infinite alternate}
 .pet-scene.pet .hand{display:block}
 @keyframes petSceneMove{to{transform:scale(1.035) translateY(3px)}}@keyframes handPet{to{transform:rotate(-25deg) translate(-8px,13px)}}
+
+/* Mobile-only Basenji placement — desktop stays unchanged */
+@media (max-width: 600px){
+  .room-dog{
+    left:64% !important;
+    bottom:23% !important;
+    width:210px !important;
+    height:130px !important;
+    transform:translateX(-50%) scale(var(--dog-scale,.75)) !important;
+    transform-origin:center bottom !important;
+  }
+}
 </style>
 
