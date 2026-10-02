@@ -4,33 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
 <title>Our Place ♡</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
-const PET_FRAMES={
- feed:['feed-1.jpg','feed-2.jpg','feed-3.jpg','feed-4.jpg','feed-5.jpg','feed-6.jpg'],
- pet:['pet-1.jpg','pet-2.jpg','pet-3.jpg','pet-4.jpg','pet-5.jpg','pet-6.jpg'],
- play:['play-1.jpg','play-2.jpg','play-3.jpg','play-4.jpg','play-5.jpg','play-6.jpg']
-};
-let petFrameTimer=null;
-function playPetFrames(type){
- const img=document.getElementById('petSceneImg');
- const scene=document.getElementById('petDogPhoto');
- if(!img||!PET_FRAMES[type])return;
- if(petFrameTimer)clearInterval(petFrameTimer);
- scene.classList.add('frame-animation');
- let n=0;
- img.src=PET_FRAMES[type][0];
- petFrameTimer=setInterval(()=>{
-   n++;
-   if(n>=PET_FRAMES[type].length){
-     clearInterval(petFrameTimer); petFrameTimer=null;
-     setTimeout(()=>{img.src='basenji-idle.png';scene.classList.remove('frame-animation')},650);
-     return;
-   }
-   img.src=PET_FRAMES[type][n];
- },900);
-}
-
-</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#2f211f;background:#2a1717}button,input,textarea{font:inherit}button{cursor:pointer}
 :root{--cream:#fff7ef;--wine:#9f334d;--brown:#3b211e;--glass:rgba(255,247,239,.93);--shadow:0 12px 32px rgba(31,14,12,.22)}
@@ -301,14 +275,40 @@ async function openPet(){
  <input id="petNameInput" class="field" maxlength="20" placeholder="Имя пса" value="${data.name==='???'?'':esc(data.name||'')}"><button class="primary" onclick="savePetName()">Сохранить имя ♡</button>`);
 }
 function animateRoomPet(type){const pet=document.getElementById('roomPet'),prop=document.getElementById('petProp');if(!pet)return;pet.classList.remove('pet-idle','pet-eat','pet-play','pet-pet');pet.classList.add(type==='feed'?'pet-eat':type==='play'?'pet-play':'pet-pet');if(prop)prop.textContent=type==='feed'?'🥣':type==='play'?'🧶':'';setTimeout(()=>{pet.classList.remove('pet-eat','pet-play','pet-pet');pet.classList.add('pet-idle');if(prop)prop.textContent=''},2600)}
+
+const PET_FRAMES={
+ feed:['feed-1.jpg','feed-2.jpg','feed-3.jpg','feed-4.jpg','feed-5.jpg','feed-6.jpg'],
+ pet:['pet-1.jpg','pet-2.jpg','pet-3.jpg','pet-4.jpg','pet-5.jpg','pet-6.jpg'],
+ play:['play-1.jpg','play-2.jpg','play-3.jpg','play-4.jpg','play-5.jpg','play-6.jpg']
+};
+let petFrameTimer=null;
+function playPetFrames(type){
+ const img=document.getElementById('petSceneImg');
+ const scene=document.getElementById('petDogPhoto');
+ if(!img||!scene||!PET_FRAMES[type])return;
+ if(petFrameTimer){clearInterval(petFrameTimer);petFrameTimer=null}
+ scene.classList.add('frame-animation');
+ let n=0;
+ img.src=PET_FRAMES[type][0];
+ petFrameTimer=setInterval(()=>{
+   n++;
+   if(n>=PET_FRAMES[type].length){
+     clearInterval(petFrameTimer); petFrameTimer=null;
+     setTimeout(()=>{if(document.getElementById('petSceneImg'))img.src='basenji-idle.png';scene.classList.remove('frame-animation')},500);
+     return;
+   }
+   img.src=PET_FRAMES[type][n];
+ },700);
+}
+
 async function petAction(type){
  const{data}=await db.from('our_pet').select('*').limit(1).maybeSingle();if(!data)return;
  let hunger=data.hunger??100,happiness=data.happiness??100,affection=data.affection??0;
  const dog=document.getElementById('petDogPhoto'),img=document.getElementById('petSceneImg'),note=document.getElementById('petActionNote');if(!dog||!img)return;
  dog.classList.remove('feed','pet','play','action');void dog.offsetWidth;let duration=7000;
- document.querySelectorAll('.pet-actions button').forEach(b=>b.disabled=true);if(type==='feed'){hunger=Math.min(100,hunger+15);affection+=1;dog.classList.add('feed','action');img.src='basenji-eat.png';if(note)note.textContent='Кушает из миски и довольно виляет хвостиком… ♡';duration=8000}
- if(type==='pet'){happiness=Math.min(100,happiness+10);affection+=2;dog.classList.add('pet','action');img.src='basenji-pet.png';if(note)note.textContent='Тянется к руке, закрывает глазки и прижимается… ♡';duration=7000}
- if(type==='play'){happiness=Math.min(100,happiness+15);hunger=Math.max(0,hunger-3);affection+=2;dog.classList.add('play','action');img.src='basenji-play.png';if(note)note.textContent='Прыгает за игрушкой и тащит её обратно… ♡';duration=9000}
+ document.querySelectorAll('.pet-actions button').forEach(b=>b.disabled=true);if(type==='feed'){hunger=Math.min(100,hunger+15);affection+=1;dog.classList.add('feed','action');playPetFrames('feed');if(note)note.textContent='Кушает из миски и довольно виляет хвостиком… ♡';duration=5000}
+ if(type==='pet'){happiness=Math.min(100,happiness+10);affection+=2;dog.classList.add('pet','action');playPetFrames('pet');if(note)note.textContent='Тянется к руке, закрывает глазки и прижимается… ♡';duration=5000}
+ if(type==='play'){happiness=Math.min(100,happiness+15);hunger=Math.max(0,hunger-3);affection+=2;dog.classList.add('play','action');playPetFrames('play');if(note)note.textContent='Прыгает за игрушкой и тащит её обратно… ♡';duration=5000}
  catLifeBusy=true;
  await db.from('our_pet').update({pet_type:'basenji',hunger,happiness,affection,last_fed:type==='feed'?new Date().toISOString():data.last_fed,last_played:type==='play'?new Date().toISOString():data.last_played,updated_at:new Date().toISOString()}).eq('id',data.id);
  setTimeout(()=>{catLifeBusy=false;if(document.getElementById('petDogPhoto'))openPet();loadPet()},duration);
