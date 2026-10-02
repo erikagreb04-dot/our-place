@@ -47,9 +47,9 @@
 
 /* Basenji v1 */
 .pet-dog-photo{width:190px;height:190px;border-radius:32px;overflow:hidden;margin:8px auto 12px;background:#eaded8;box-shadow:0 8px 24px rgba(55,31,26,.12)}
-.pet-dog-photo img{width:410px;height:273px;object-fit:cover;object-position:73% 42%;transform:translate(-117px,-10px) scale(1.45);transform-origin:center}
+.pet-dog-photo img{width:100%;height:100%;object-fit:cover;object-position:center;transform:none;transform-origin:center}
 .pet-dog-photo.feed img{animation:dogEat .55s ease-in-out infinite alternate}.pet-dog-photo.pet img{animation:dogCuddle .8s ease-in-out infinite alternate}.pet-dog-photo.play img{animation:dogPlay .55s ease-in-out infinite alternate}
-@keyframes dogEat{to{transform:translate(-117px,3px) scale(1.45) rotate(1deg)}}@keyframes dogCuddle{to{transform:translate(-122px,-7px) scale(1.5) rotate(-1deg)}}@keyframes dogPlay{to{transform:translate(-108px,-18px) scale(1.48) rotate(2deg)}}
+@keyframes dogEat{to{transform:translateY(7px) scale(.98)}}@keyframes dogCuddle{to{transform:scale(1.04) rotate(-1deg)}}@keyframes dogPlay{to{transform:translateY(-5px) rotate(1deg) scale(1.03)}}
 .dog-growth{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:12px}.dog-growth div{text-align:center;font-size:10px;color:#88736c;padding:8px 3px;border-radius:12px;background:#fff}.dog-growth b{display:block;font-size:20px;margin-bottom:3px}.dog-growth .now{background:#f4e5dc;color:#5b302d}
 
 @media(min-width:561px){body{background:#160e0d}.scene{box-shadow:0 0 70px #000}}
@@ -216,7 +216,7 @@ async function openPet(){
  const name=(data.name&&data.name!=='???')?data.name:'Наш пёс',h=Math.max(0,Math.min(100,data.hunger??100)),happy=Math.max(0,Math.min(100,data.happiness??100)),affection=Math.max(0,data.affection??0),age=petAge(data);
  show(`<h2>${esc(name)} ♡</h2><div class="sub">Ваш басенджи · растёт вместе с вами.</div>
  <div class="pet-stage">День ${age.days+1} · ${age.label}</div>
- <div class="pet-dog-photo" id="petDogPhoto"><img src="basenji-reference.png" alt="Щенок басенджи"></div>
+ <div class="pet-dog-photo" id="petDogPhoto"><img src="basenji.png" alt="Щенок басенджи"></div>
  <div id="petActionNote" class="pet-action-note">Сейчас отдыхает рядом с вами ♡</div>
  <div class="earned">🥣 Сытость <b>${h}%</b> · ❤️ Счастье <b>${happy}%</b><br>💕 Привязанность <b>${affection}</b></div>
  <div class="pet-actions"><button onclick="petAction('feed')"><span>🥣</span>Покормить</button><button onclick="petAction('pet')"><span>🤍</span>Погладить</button><button onclick="petAction('play')"><span>🧶</span>Поиграть</button></div>
@@ -252,3 +252,9 @@ window.addEventListener('DOMContentLoaded',()=>{calcDays();const s=localStorage.
 </script>
 </body>
 </html>
+
+<style>
+/* v2: remove the old cartoon cat completely */
+.room-cat,.cat,.cat-body,.cat-head,.cat-tail,.cat-ear,.cat-eye,.cat-paw,
+#roomCat,#catLife,#roomPet { display:none !important; }
+</style>
