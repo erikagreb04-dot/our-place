@@ -209,7 +209,7 @@ function startCatLife(){
  catLifeTimer=setTimeout(run,1800);
 }
 
-function petAge(data){const born=new Date(data.created_at||Date.now());const days=Math.max(0,Math.floor((Date.now()-born.getTime())/86400000));const stage=days<60?1:days<150?2:days<270?3:4;const labels=['','щенок','подросток','юниор','взрослый пёс'];return{days,stage,label:labels[stage],scale:Math.min(1.18,.64+days*.0018)}}}
+function petAge(data){const born=new Date(data.created_at||Date.now());const days=Math.max(0,Math.floor((Date.now()-born.getTime())/86400000));const stage=days<60?1:days<150?2:days<270?3:4;const labels=['','щенок','подросток','юниор','взрослый пёс'];return{days,stage,label:labels[stage],scale:Math.min(1.18,.64+days*.0018)}}
 async function loadPet(){const{data}=await db.from('our_pet').select('*').limit(1).maybeSingle();if(!data)return;const age=petAge(data),pet=document.getElementById('roomPet');if(pet)pet.style.transform=`scale(${age.scale})`;startCatLife();if((data.stage||1)!==age.stage)db.from('our_pet').update({stage:age.stage,updated_at:new Date().toISOString()}).eq('id',data.id)}
 async function openPet(){
  const{data}=await db.from('our_pet').select('*').limit(1).maybeSingle();if(!data)return toast('Пёс потерялся 😭');
