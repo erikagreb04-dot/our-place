@@ -44,6 +44,14 @@
 .pet-stage-visual{height:190px;display:grid;place-items:center;overflow:hidden;margin:4px 0 10px}.pet-modal-cat{position:relative;width:150px;height:150px;transform:scale(1.45)}.pet-modal-cat .cat-art{position:absolute;left:30px;top:28px}
 .pet-action-note{text-align:center;color:#88736c;font-size:12px;min-height:18px;margin:5px 0 2px}
 
+
+/* Basenji v1 */
+.pet-dog-photo{width:190px;height:190px;border-radius:32px;overflow:hidden;margin:8px auto 12px;background:#eaded8;box-shadow:0 8px 24px rgba(55,31,26,.12)}
+.pet-dog-photo img{width:410px;height:273px;object-fit:cover;object-position:73% 42%;transform:translate(-117px,-10px) scale(1.45);transform-origin:center}
+.pet-dog-photo.feed img{animation:dogEat .55s ease-in-out infinite alternate}.pet-dog-photo.pet img{animation:dogCuddle .8s ease-in-out infinite alternate}.pet-dog-photo.play img{animation:dogPlay .55s ease-in-out infinite alternate}
+@keyframes dogEat{to{transform:translate(-117px,3px) scale(1.45) rotate(1deg)}}@keyframes dogCuddle{to{transform:translate(-122px,-7px) scale(1.5) rotate(-1deg)}}@keyframes dogPlay{to{transform:translate(-108px,-18px) scale(1.48) rotate(2deg)}}
+.dog-growth{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:12px}.dog-growth div{text-align:center;font-size:10px;color:#88736c;padding:8px 3px;border-radius:12px;background:#fff}.dog-growth b{display:block;font-size:20px;margin-bottom:3px}.dog-growth .now{background:#f4e5dc;color:#5b302d}
+
 @media(min-width:561px){body{background:#160e0d}.scene{box-shadow:0 0 70px #000}}
 </style>
 </head>
@@ -58,9 +66,9 @@
 <button class="status erika" onclick="openStatus('Эрика')"><span class="emo" id="erikaMood">🤍</span><b>Эрика</b><span id="erikaText">нажми и оставь статус</span></button>
 <button class="status oliver" onclick="openStatus('Оливер')"><span class="emo" id="oliverMood">🤍</span><b>Оливер</b><span id="oliverText">нажми и оставь статус</span></button>
 
-<div id="roomPet" class="room-pet pet-idle" onclick="openPet()" aria-label="Наш кот">
+<div id="roomPet" class="room-pet pet-idle" onclick="openPet()" aria-label="Наш пёс">
 <div class="pet-heartfx">♡</div><div class="cat-art"><div class="cat-tail"></div><div class="cat-body"></div><div class="cat-head"><i class="ear e1"></i><i class="ear e2"></i><i class="eye eye1"></i><i class="eye eye2"></i><i class="nose"></i></div><div class="cat-paw p1"></div><div class="cat-paw p2"></div></div><div class="pet-prop" id="petProp"></div></div><div class="actions"><button class="action" onclick="openMood()"><span>🙂</span>Моё настроение</button><button class="action" onclick="openNeed()"><span>❤️</span>Что мне сейчас нужно</button><button class="action" onclick="openSend()"><span>💌</span>Отправить</button><button class="action" onclick="openGame()"><span>🎮</span>Строить дом</button></div>
-<nav class="nav"><button class="active" onclick="home()"><span>🏠</span>Дом</button><button onclick="openPhotos()"><span>🖼️</span>Наши фото</button><button onclick="openNotes()"><span>📝</span>Записки</button><button onclick="openGame()"><span>🎮</span>Игра</button><button onclick="openPet()"><span>🐈</span>Питомец</button></nav>
+<nav class="nav"><button class="active" onclick="home()"><span>🏠</span>Дом</button><button onclick="openPhotos()"><span>🖼️</span>Наши фото</button><button onclick="openNotes()"><span>📝</span>Записки</button><button onclick="openGame()"><span>🎮</span>Игра</button><button onclick="openPet()"><span>🐕</span>Питомец</button></nav>
 </main></div>
 <div class="modal-wrap" id="modalWrap" onclick="backdrop(event)"><div class="modal" id="modal"><div class="handle"></div><button class="close" onclick="closeModal()">✕</button><div id="modalBody"></div></div></div>
 <div class="toast" id="toast"></div>
@@ -201,34 +209,34 @@ function startCatLife(){
  catLifeTimer=setTimeout(run,1800);
 }
 
-function petAge(data){const born=new Date(data.created_at||Date.now());const days=Math.max(0,Math.floor((Date.now()-born.getTime())/86400000));const stage=days<18?1:days<42?2:3;return{days,stage,label:stage===1?'маленький котёнок':stage===2?'котёнок-подросток':'взрослый кот',scale:Math.min(1.18,0.62+days*0.01)}}
+function petAge(data){const born=new Date(data.created_at||Date.now());const days=Math.max(0,Math.floor((Date.now()-born.getTime())/86400000));const stage=days<60?1:days<150?2:days<270?3:4;const labels=['','щенок','подросток','юниор','взрослый пёс'];return{days,stage,label:labels[stage],scale:Math.min(1.18,.64+days*.0018)}}}
 async function loadPet(){const{data}=await db.from('our_pet').select('*').limit(1).maybeSingle();if(!data)return;const age=petAge(data),pet=document.getElementById('roomPet');if(pet)pet.style.transform=`scale(${age.scale})`;startCatLife();if((data.stage||1)!==age.stage)db.from('our_pet').update({stage:age.stage,updated_at:new Date().toISOString()}).eq('id',data.id)}
 async function openPet(){
- const{data}=await db.from('our_pet').select('*').limit(1).maybeSingle();if(!data)return toast('Кот потерялся 😭');
- const name=(data.name&&data.name!=='???')?data.name:'Наш кот',h=Math.max(0,Math.min(100,data.hunger??100)),happy=Math.max(0,Math.min(100,data.happiness??100)),affection=Math.max(0,data.affection??0),age=petAge(data);
- show(`<h2>${esc(name)} ♡</h2><div class="sub">Ваш общий питомец · растёт вместе с вами.</div>
+ const{data}=await db.from('our_pet').select('*').limit(1).maybeSingle();if(!data)return toast('Пёс потерялся 😭');
+ const name=(data.name&&data.name!=='???')?data.name:'Наш пёс',h=Math.max(0,Math.min(100,data.hunger??100)),happy=Math.max(0,Math.min(100,data.happiness??100)),affection=Math.max(0,data.affection??0),age=petAge(data);
+ show(`<h2>${esc(name)} ♡</h2><div class="sub">Ваш басенджи · растёт вместе с вами.</div>
  <div class="pet-stage">День ${age.days+1} · ${age.label}</div>
- <div class="pet-stage-visual">${catDrawing('modalCat')}</div><div id="petActionNote" class="pet-action-note">Сейчас он отдыхает ♡</div>
+ <div class="pet-dog-photo" id="petDogPhoto"><img src="basenji-reference.png" alt="Щенок басенджи"></div>
+ <div id="petActionNote" class="pet-action-note">Сейчас отдыхает рядом с вами ♡</div>
  <div class="earned">🥣 Сытость <b>${h}%</b> · ❤️ Счастье <b>${happy}%</b><br>💕 Привязанность <b>${affection}</b></div>
  <div class="pet-actions"><button onclick="petAction('feed')"><span>🥣</span>Покормить</button><button onclick="petAction('pet')"><span>🤍</span>Погладить</button><button onclick="petAction('play')"><span>🧶</span>Поиграть</button></div>
- <input id="petNameInput" class="field" maxlength="20" placeholder="Имя кота" value="${data.name==='???'?'':esc(data.name||'')}"><button class="primary" onclick="savePetName()">Сохранить имя ♡</button>`);
+ <div class="dog-growth"><div class="${age.stage===1?'now':''}"><b>🐕</b>Щенок<br>0–2 мес</div><div class="${age.stage===2?'now':''}"><b>🐕</b>Подросток<br>2–5 мес</div><div class="${age.stage===3?'now':''}"><b>🐕</b>Юниор<br>5–9 мес</div><div class="${age.stage===4?'now':''}"><b>🐕</b>Взрослый<br>9+ мес</div></div>
+ <input id="petNameInput" class="field" maxlength="20" placeholder="Имя пса" value="${data.name==='???'?'':esc(data.name||'')}"><button class="primary" onclick="savePetName()">Сохранить имя ♡</button>`);
 }
 function animateRoomPet(type){const pet=document.getElementById('roomPet'),prop=document.getElementById('petProp');if(!pet)return;pet.classList.remove('pet-idle','pet-eat','pet-play','pet-pet');pet.classList.add(type==='feed'?'pet-eat':type==='play'?'pet-play':'pet-pet');if(prop)prop.textContent=type==='feed'?'🥣':type==='play'?'🧶':'';setTimeout(()=>{pet.classList.remove('pet-eat','pet-play','pet-pet');pet.classList.add('pet-idle');if(prop)prop.textContent=''},2600)}
 async function petAction(type){
  const{data}=await db.from('our_pet').select('*').limit(1).maybeSingle();if(!data)return;
  let hunger=data.hunger??100,happiness=data.happiness??100,affection=data.affection??0;
- const cat=document.getElementById('modalCat'),note=document.getElementById('petActionNote');
- if(!cat)return;
- cat.classList.remove('pet-eat','pet-play','pet-pet');const prop=cat.querySelector('.pet-prop');
- let duration=6500;
- if(type==='feed'){hunger=Math.min(100,hunger+15);affection+=1;cat.classList.add('pet-eat');if(prop)prop.textContent='🥣';if(note)note.textContent='Кушает… ням-ням ♡';duration=7000}
- if(type==='pet'){happiness=Math.min(100,happiness+10);affection+=2;cat.classList.add('pet-pet');if(prop)prop.textContent='';if(note)note.textContent='Мурчит и подставляет голову ♡';duration=6000}
- if(type==='play'){happiness=Math.min(100,happiness+15);hunger=Math.max(0,hunger-3);affection+=2;cat.classList.add('pet-play');if(prop)prop.textContent='🧶';if(note)note.textContent='Гоняется за клубком…';duration=8000}
+ const dog=document.getElementById('petDogPhoto'),note=document.getElementById('petActionNote');if(!dog)return;
+ dog.classList.remove('feed','pet','play');let duration=7000;
+ if(type==='feed'){hunger=Math.min(100,hunger+15);affection+=1;dog.classList.add('feed');if(note)note.textContent='Ест из миски… ням ♡';duration=8000}
+ if(type==='pet'){happiness=Math.min(100,happiness+10);affection+=2;dog.classList.add('pet');if(note)note.textContent='Прижимается к руке и довольно мурчит по-собачьи ♡';duration=7000}
+ if(type==='play'){happiness=Math.min(100,happiness+15);hunger=Math.max(0,hunger-3);affection+=2;dog.classList.add('play');if(note)note.textContent='Играет и тянет игрушку ♡';duration=9000}
  catLifeBusy=true;animateRoomPet(type);
- await db.from('our_pet').update({hunger,happiness,affection,last_fed:type==='feed'?new Date().toISOString():data.last_fed,last_played:type==='play'?new Date().toISOString():data.last_played,updated_at:new Date().toISOString()}).eq('id',data.id);
- setTimeout(()=>{catLifeBusy=false;if(document.getElementById('modalCat'))openPet();loadPet()},duration);
+ await db.from('our_pet').update({pet_type:'basenji',hunger,happiness,affection,last_fed:type==='feed'?new Date().toISOString():data.last_fed,last_played:type==='play'?new Date().toISOString():data.last_played,updated_at:new Date().toISOString()}).eq('id',data.id);
+ setTimeout(()=>{catLifeBusy=false;if(document.getElementById('petDogPhoto'))openPet();loadPet()},duration);
 }
-async function savePetName(){const name=document.getElementById('petNameInput').value.trim();if(!name)return toast('Дайте коту имя ♡');const{data}=await db.from('our_pet').select('id').limit(1).maybeSingle();if(!data)return;const{error}=await db.from('our_pet').update({name,pet_type:'cat',updated_at:new Date().toISOString()}).eq('id',data.id);if(error)return toast('Имя не сохранилось 😭');toast('Теперь его зовут '+name+' ♡');loadPet();openPet()}
+async function savePetName(){const name=document.getElementById('petNameInput').value.trim();if(!name)return toast('Дайте псу имя ♡');const{data}=await db.from('our_pet').select('id').limit(1).maybeSingle();if(!data)return;const{error}=await db.from('our_pet').update({name,pet_type:'basenji',updated_at:new Date().toISOString()}).eq('id',data.id);if(error)return toast('Имя не сохранилось 😭');toast('Теперь его зовут '+name+' ♡');loadPet();openPet()}
 function openPhotos(){show(`<h2>Наши фото 📸</h2><div class="sub">Фотостена будет следующим шагом. Для личных фото сначала сделаем безопасное хранение, чтобы они не лежали публично в GitHub.</div>`)}
 function home(){closeModal()}
 function esc(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
