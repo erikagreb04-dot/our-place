@@ -4,7 +4,33 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
 <title>Our Place ♡</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+const PET_FRAMES={
+ feed:['feed-1.jpg','feed-2.jpg','feed-3.jpg','feed-4.jpg','feed-5.jpg','feed-6.jpg'],
+ pet:['pet-1.jpg','pet-2.jpg','pet-3.jpg','pet-4.jpg','pet-5.jpg','pet-6.jpg'],
+ play:['play-1.jpg','play-2.jpg','play-3.jpg','play-4.jpg','play-5.jpg','play-6.jpg']
+};
+let petFrameTimer=null;
+function playPetFrames(type){
+ const img=document.getElementById('petSceneImg');
+ const scene=document.getElementById('petDogPhoto');
+ if(!img||!PET_FRAMES[type])return;
+ if(petFrameTimer)clearInterval(petFrameTimer);
+ scene.classList.add('frame-animation');
+ let n=0;
+ img.src=PET_FRAMES[type][0];
+ petFrameTimer=setInterval(()=>{
+   n++;
+   if(n>=PET_FRAMES[type].length){
+     clearInterval(petFrameTimer); petFrameTimer=null;
+     setTimeout(()=>{img.src='basenji-idle.png';scene.classList.remove('frame-animation')},650);
+     return;
+   }
+   img.src=PET_FRAMES[type][n];
+ },900);
+}
+
+</script>
 <style>
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#2f211f;background:#2a1717}button,input,textarea{font:inherit}button{cursor:pointer}
 :root{--cream:#fff7ef;--wine:#9f334d;--brown:#3b211e;--glass:rgba(255,247,239,.93);--shadow:0 12px 32px rgba(31,14,12,.22)}
@@ -113,6 +139,9 @@
 @keyframes handReal{0%{transform:rotate(-28deg) translate(6px,-4px)}50%{transform:rotate(-20deg) translate(-18px,30px)}100%{transform:rotate(-26deg) translate(2px,5px)}}
 @keyframes ballReal{0%{transform:translateX(0) rotate(0)}50%{transform:translateX(135px) rotate(300deg)}100%{transform:translateX(15px) rotate(520deg)}}
 
+
+.pet-scene.frame-animation img{animation:none!important;transform:none!important;object-fit:cover!important;width:100%!important;height:100%!important}
+.pet-scene.frame-animation .action-bowl,.pet-scene.frame-animation .action-hand,.pet-scene.frame-animation .action-ball,.pet-scene.frame-animation .action-heart,.pet-scene.frame-animation .action-spark{display:none!important}
 </style>
 </head>
 <body>
@@ -322,3 +351,4 @@ window.addEventListener('DOMContentLoaded',()=>{calcDays();const s=localStorage.
 .pet-scene.pet .hand{display:block}
 @keyframes petSceneMove{to{transform:scale(1.035) translateY(3px)}}@keyframes handPet{to{transform:rotate(-25deg) translate(-8px,13px)}}
 </style>
+
