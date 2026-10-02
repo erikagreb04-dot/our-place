@@ -26,6 +26,11 @@
 .game-history{margin-top:18px}.game-history .done{background:#fff;padding:10px 12px;border-radius:14px;margin:7px 0;font-size:12px}.game-wait{font-size:54px;text-align:center;padding:12px 0}.game-finish{text-align:center;padding:15px}.game-finish .house{font-size:80px}
 .pet-big{text-align:center;font-size:92px;line-height:1.1;margin:10px 0}.pet-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.pet-actions button{border:0;border-radius:17px;background:#fff;padding:13px 5px;font-size:12px}.pet-actions span{display:block;font-size:28px;margin-bottom:4px}
 
+
+.status{top:38%;max-width:132px;background:transparent!important;box-shadow:none!important;color:#fff;padding:3px 5px;border:0;text-shadow:0 2px 8px rgba(35,15,14,.95);font-weight:700}.status b{display:none!important}.status .emo{font-size:20px;display:inline;margin-right:4px}.status:after{display:none!important}.status.erika{left:9%}.status.oliver{right:7%}
+.room-pet{position:absolute;z-index:5;left:11%;bottom:177px;width:92px;height:92px;transform-origin:50% 100%;cursor:pointer;transition:transform .45s ease}.cat-art{position:absolute;left:13px;top:10px;width:66px;height:72px;animation:catBreath 2.2s ease-in-out infinite}.cat-body{position:absolute;left:18px;top:30px;width:39px;height:36px;background:#d88d56;border-radius:48% 52% 42% 42%}.cat-head{position:absolute;left:14px;top:8px;width:42px;height:38px;background:#e7a36e;border-radius:48% 48% 45% 45%;z-index:3}.ear{position:absolute;top:-8px;width:15px;height:18px;background:#d88d56;clip-path:polygon(50% 0,100% 100%,0 100%)}.e1{left:3px;transform:rotate(-8deg)}.e2{right:3px;transform:rotate(8deg)}.eye{position:absolute;top:17px;width:4px;height:5px;background:#35231f;border-radius:50%}.eye1{left:11px}.eye2{right:11px}.nose{position:absolute;left:19px;top:24px;width:5px;height:4px;background:#9e5d5d;border-radius:50%}.cat-paw{position:absolute;top:58px;width:13px;height:16px;background:#f2c09b;border-radius:8px;z-index:4}.p1{left:21px}.p2{left:42px}.cat-tail{position:absolute;left:48px;top:38px;width:28px;height:12px;border:8px solid #c77b49;border-left:0;border-bottom:0;border-radius:0 24px 0 0;transform-origin:left center;z-index:0;animation:tail 2.4s ease-in-out infinite}.pet-prop{position:absolute;right:-3px;bottom:0;font-size:25px;z-index:6}.pet-heartfx{position:absolute;z-index:8;left:40px;top:0;color:#ff6682;font-size:22px;opacity:0}.room-pet.pet-eat .cat-art{animation:eatBob .38s ease-in-out infinite alternate;transform:rotate(7deg) translateY(7px)}.room-pet.pet-play .cat-art{animation:playHop .48s ease-in-out infinite alternate}.room-pet.pet-pet .cat-art{animation:happySquish .55s ease-in-out infinite alternate}.room-pet.pet-pet .pet-heartfx{animation:heartUp .8s ease-out infinite}.pet-stage{font-size:12px;color:#88736c;text-align:center;margin:4px 0 10px}
+@keyframes catBreath{50%{transform:translateY(1.5px) scaleY(.98)}}@keyframes tail{50%{transform:rotate(18deg)}}@keyframes eatBob{to{transform:rotate(7deg) translateY(10px)}}@keyframes playHop{to{transform:translate(8px,-7px) rotate(4deg)}}@keyframes happySquish{to{transform:scale(1.04,.96) translateY(2px)}}@keyframes heartUp{0%{opacity:0;transform:translateY(8px) scale(.7)}30%{opacity:1}100%{opacity:0;transform:translateY(-22px) scale(1.15)}}
+
 @media(min-width:561px){body{background:#160e0d}.scene{box-shadow:0 0 70px #000}}
 </style>
 </head>
@@ -34,13 +39,14 @@
 <div id="app"><main class="scene" id="scene">
 <img class="bg" id="roomBg" src="room.png" onerror="this.onerror=null;this.src='room-bg'" alt="">
 <div class="shade"></div>
-<header class="top"><div class="brand"><h1>Our Place ♡</h1><div>Эрика & Оливер</div></div><div class="mini"><div class="mini-avatar">👩🏻</div><div class="mini-avatar">👨🏻</div></div></header>
+<header class="top"><div class="brand"><h1>Our Place ♡</h1><div>Эрика & Оливер</div></div></header>
 <div class="count"><small>До встречи</small><strong id="days">—</strong><div id="daysWord">дней</div><div class="date">06.11.2026 ♡</div></div>
 <div class="people"><img id="usImg" src="us.png" onerror="this.onerror=null;this.src='us'" alt="Эрика и Оливер"></div>
 <button class="status erika" onclick="openStatus('Эрика')"><span class="emo" id="erikaMood">🤍</span><b>Эрика</b><span id="erikaText">нажми и оставь статус</span></button>
 <button class="status oliver" onclick="openStatus('Оливер')"><span class="emo" id="oliverMood">🤍</span><b>Оливер</b><span id="oliverText">нажми и оставь статус</span></button>
-<button class="pet-card" onclick="openPet()"><span class="pet-icon" id="petIcon">🐈</span><span><b id="petNameCard">Наш кот ♡</b><small id="petText">Живёт вместе с вами</small></span></button>
-<div class="actions"><button class="action" onclick="openMood()"><span>🙂</span>Моё настроение</button><button class="action" onclick="openNeed()"><span>❤️</span>Что мне сейчас нужно</button><button class="action" onclick="openSend()"><span>💌</span>Отправить</button><button class="action" onclick="openGame()"><span>🎮</span>Строить дом</button></div>
+
+<div id="roomPet" class="room-pet pet-idle" onclick="openPet()" aria-label="Наш кот">
+<div class="pet-heartfx">♡</div><div class="cat-art"><div class="cat-tail"></div><div class="cat-body"></div><div class="cat-head"><i class="ear e1"></i><i class="ear e2"></i><i class="eye eye1"></i><i class="eye eye2"></i><i class="nose"></i></div><div class="cat-paw p1"></div><div class="cat-paw p2"></div></div><div class="pet-prop" id="petProp"></div></div><div class="actions"><button class="action" onclick="openMood()"><span>🙂</span>Моё настроение</button><button class="action" onclick="openNeed()"><span>❤️</span>Что мне сейчас нужно</button><button class="action" onclick="openSend()"><span>💌</span>Отправить</button><button class="action" onclick="openGame()"><span>🎮</span>Строить дом</button></div>
 <nav class="nav"><button class="active" onclick="home()"><span>🏠</span>Дом</button><button onclick="openPhotos()"><span>🖼️</span>Наши фото</button><button onclick="openNotes()"><span>📝</span>Записки</button><button onclick="openGame()"><span>🎮</span>Игра</button><button onclick="openPet()"><span>🐈</span>Питомец</button></nav>
 </main></div>
 <div class="modal-wrap" id="modalWrap" onclick="backdrop(event)"><div class="modal" id="modal"><div class="handle"></div><button class="close" onclick="closeModal()">✕</button><div id="modalBody"></div></div></div>
@@ -157,54 +163,12 @@ async function chooseHouseOption(step,index){
   await openGame();
 }
 
-async function loadPet(){
-  const {data}=await db.from('our_pet').select('*').limit(1).maybeSingle();
-  if(!data)return;
-  const name=(data.name&&data.name!=='???')?data.name:'Наш кот';
-  const h=Math.max(0,Math.min(100,data.hunger??100));
-  const happy=Math.max(0,Math.min(100,data.happiness??100));
-  if(document.getElementById('petNameCard'))petNameCard.textContent=name+' ♡';
-  if(document.getElementById('petText'))petText.textContent=`Сытость ${h}% · счастье ${happy}%`;
-}
-async function openPet(){
-  const {data}=await db.from('our_pet').select('*').limit(1).maybeSingle();
-  if(!data)return toast('Кот потерялся 😭');
-  const name=(data.name&&data.name!=='???')?data.name:'Наш кот';
-  const h=Math.max(0,Math.min(100,data.hunger??100));
-  const happy=Math.max(0,Math.min(100,data.happiness??100));
-  const affection=Math.max(0,data.affection??0);
-  show(`<h2>${esc(name)} 🐈</h2><div class="sub">Ваш общий питомец. Заботиться о нём можете оба.</div>
-    <div class="pet-big" id="petBig">🐈</div>
-    <div class="earned">🍗 Сытость <b>${h}%</b> · ❤️ Счастье <b>${happy}%</b><br>💕 Привязанность <b>${affection}</b></div>
-    <div class="pet-actions">
-      <button onclick="petAction('feed')"><span>🥣</span>Покормить</button>
-      <button onclick="petAction('pet')"><span>🤍</span>Погладить</button>
-      <button onclick="petAction('play')"><span>🧶</span>Поиграть</button>
-    </div>
-    <input id="petNameInput" class="field" maxlength="20" placeholder="Имя кота" value="${data.name==='???'?'':esc(data.name||'')}">
-    <button class="primary" onclick="savePetName()">Сохранить имя ♡</button>`);
-}
-async function petAction(type){
-  const {data}=await db.from('our_pet').select('*').limit(1).maybeSingle();
-  if(!data)return;
-  let hunger=data.hunger??100,happiness=data.happiness??100,affection=data.affection??0;
-  let icon='🐈',msg='';
-  if(type==='feed'){hunger=Math.min(100,hunger+15);affection+=1;icon='😺';msg='Ням ♡'}
-  if(type==='pet'){happiness=Math.min(100,happiness+10);affection+=2;icon='😻';msg='Муррр ♡'}
-  if(type==='play'){happiness=Math.min(100,happiness+15);hunger=Math.max(0,hunger-3);affection+=2;icon='🐈‍⬛';msg='Играем! 🧶'}
-  await db.from('our_pet').update({hunger,happiness,affection,last_fed:type==='feed'?new Date().toISOString():data.last_fed,last_played:type==='play'?new Date().toISOString():data.last_played,updated_at:new Date().toISOString()}).eq('id',data.id);
-  const e=document.getElementById('petBig');if(e)e.textContent=icon;
-  toast(msg);setTimeout(()=>openPet(),900);loadPet();
-}
-async function savePetName(){
-  const name=document.getElementById('petNameInput').value.trim();
-  if(!name)return toast('Дайте коту имя ♡');
-  const {data}=await db.from('our_pet').select('id').limit(1).maybeSingle();
-  if(!data)return;
-  const {error}=await db.from('our_pet').update({name,pet_type:'cat',updated_at:new Date().toISOString()}).eq('id',data.id);
-  if(error)return toast('Имя не сохранилось 😭');
-  toast('Теперь его зовут '+name+' ♡');loadPet();openPet();
-}
+function petAge(data){const born=new Date(data.created_at||Date.now());const days=Math.max(0,Math.floor((Date.now()-born.getTime())/86400000));const stage=days<7?1:days<21?2:3;return{days,stage,label:stage===1?'маленький котёнок':stage===2?'котёнок-подросток':'взрослый кот',scale:Math.min(1,0.58+days*0.02)}}
+async function loadPet(){const{data}=await db.from('our_pet').select('*').limit(1).maybeSingle();if(!data)return;const age=petAge(data),pet=document.getElementById('roomPet');if(pet)pet.style.transform=`scale(${age.scale})`;if((data.stage||1)!==age.stage)db.from('our_pet').update({stage:age.stage,updated_at:new Date().toISOString()}).eq('id',data.id)}
+async function openPet(){const{data}=await db.from('our_pet').select('*').limit(1).maybeSingle();if(!data)return toast('Кот потерялся 😭');const name=(data.name&&data.name!=='???')?data.name:'Наш кот',h=Math.max(0,Math.min(100,data.hunger??100)),happy=Math.max(0,Math.min(100,data.happiness??100)),affection=Math.max(0,data.affection??0),age=petAge(data);show(`<h2>${esc(name)} ♡</h2><div class="sub">Он живёт прямо в вашей комнате и понемногу растёт каждый день.</div><div class="pet-stage">День ${age.days+1} · ${age.label}</div><div class="earned">🥣 Сытость <b>${h}%</b> · ❤️ Счастье <b>${happy}%</b><br>💕 Привязанность <b>${affection}</b></div><div class="pet-actions"><button onclick="petAction('feed')"><span>🥣</span>Покормить</button><button onclick="petAction('pet')"><span>🤍</span>Погладить</button><button onclick="petAction('play')"><span>🧶</span>Поиграть</button></div><input id="petNameInput" class="field" maxlength="20" placeholder="Имя кота" value="${data.name==='???'?'':esc(data.name||'')}"><button class="primary" onclick="savePetName()">Сохранить имя ♡</button>`)}
+function animateRoomPet(type){const pet=document.getElementById('roomPet'),prop=document.getElementById('petProp');if(!pet)return;pet.classList.remove('pet-idle','pet-eat','pet-play','pet-pet');pet.classList.add(type==='feed'?'pet-eat':type==='play'?'pet-play':'pet-pet');if(prop)prop.textContent=type==='feed'?'🥣':type==='play'?'🧶':'';setTimeout(()=>{pet.classList.remove('pet-eat','pet-play','pet-pet');pet.classList.add('pet-idle');if(prop)prop.textContent=''},2600)}
+async function petAction(type){const{data}=await db.from('our_pet').select('*').limit(1).maybeSingle();if(!data)return;let hunger=data.hunger??100,happiness=data.happiness??100,affection=data.affection??0,msg='';if(type==='feed'){hunger=Math.min(100,hunger+15);affection+=1;msg='Он кушает ♡'}if(type==='pet'){happiness=Math.min(100,happiness+10);affection+=2;msg='Муррр ♡'}if(type==='play'){happiness=Math.min(100,happiness+15);hunger=Math.max(0,hunger-3);affection+=2;msg='Погнали за клубком 🧶'}animateRoomPet(type);closeModal();toast(msg);await db.from('our_pet').update({hunger,happiness,affection,last_fed:type==='feed'?new Date().toISOString():data.last_fed,last_played:type==='play'?new Date().toISOString():data.last_played,updated_at:new Date().toISOString()}).eq('id',data.id);loadPet()}
+async function savePetName(){const name=document.getElementById('petNameInput').value.trim();if(!name)return toast('Дайте коту имя ♡');const{data}=await db.from('our_pet').select('id').limit(1).maybeSingle();if(!data)return;const{error}=await db.from('our_pet').update({name,pet_type:'cat',updated_at:new Date().toISOString()}).eq('id',data.id);if(error)return toast('Имя не сохранилось 😭');toast('Теперь его зовут '+name+' ♡');loadPet();openPet()}
 function openPhotos(){show(`<h2>Наши фото 📸</h2><div class="sub">Фотостена будет следующим шагом. Для личных фото сначала сделаем безопасное хранение, чтобы они не лежали публично в GitHub.</div>`)}
 function home(){closeModal()}
 function esc(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
