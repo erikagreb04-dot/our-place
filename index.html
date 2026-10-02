@@ -1,1 +1,1281 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
+<title>Наше место ❤️</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+:root{
+  --pink:#f4cbd2;
+  --light:#fff8f7;
+  --wine:#7f3045;
+  --text:#5d3440;
+  --muted:#a77b85;
+  --card:rgba(255,255,255,.78);
+}
+
+body{
+  min-height:100vh;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  color:var(--text);
+  background:
+    radial-gradient(circle at 10% 5%,#fff 0,transparent 25%),
+    radial-gradient(circle at 90% 30%,#efb9c4 0,transparent 30%),
+    linear-gradient(160deg,#fcebed,#f3c6cf);
+  padding-bottom:100px;
+}
+
+button,input,textarea{
+  font:inherit;
+}
+
+button{
+  cursor:pointer;
+}
+
+/* LOGIN */
+
+#login{
+  position:fixed;
+  inset:0;
+  z-index:1000;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:25px;
+  background:linear-gradient(150deg,#fff5f5,#efbdc8);
+}
+
+.login-card{
+  width:min(420px,100%);
+  padding:45px 25px;
+  background:rgba(255,255,255,.86);
+  border-radius:35px;
+  text-align:center;
+  box-shadow:0 25px 80px rgba(104,43,58,.18);
+}
+
+.login-heart{
+  font-size:65px;
+  margin-bottom:15px;
+}
+
+.login-card h1{
+  font-family:Georgia,serif;
+  font-weight:normal;
+  font-size:37px;
+  margin-bottom:10px;
+}
+
+.login-card p{
+  color:var(--muted);
+  margin-bottom:30px;
+}
+
+.login-buttons{
+  display:flex;
+  gap:12px;
+}
+
+.login-buttons button{
+  flex:1;
+  border:0;
+  padding:17px 10px;
+  border-radius:20px;
+  background:#8c354b;
+  color:white;
+  font-weight:600;
+}
+
+/* APP */
+
+#app{
+  display:none;
+  width:min(600px,100%);
+  margin:auto;
+  padding:20px 16px;
+}
+
+header{
+  padding:22px 5px 10px;
+  text-align:center;
+}
+
+.logo{
+  font-family:Georgia,serif;
+  font-size:34px;
+  font-weight:normal;
+}
+
+.today{
+  font-size:13px;
+  color:var(--muted);
+  margin-top:5px;
+}
+
+/* COUNTDOWN */
+
+.countdown{
+  margin:22px 0;
+  padding:27px 20px;
+  border-radius:30px;
+  background:linear-gradient(135deg,#83364b,#b45a70);
+  color:white;
+  text-align:center;
+  box-shadow:0 15px 40px rgba(107,42,58,.2);
+}
+
+.countdown-small{
+  text-transform:uppercase;
+  letter-spacing:2px;
+  font-size:11px;
+  opacity:.8;
+}
+
+#days{
+  font-family:Georgia,serif;
+  font-size:63px;
+  line-height:1;
+  margin:10px 0 3px;
+}
+
+.days-word{
+  font-size:14px;
+  opacity:.9;
+}
+
+/* PEOPLE */
+
+.people{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-bottom:18px;
+}
+
+.person{
+  padding:20px 12px;
+  border-radius:27px;
+  background:var(--card);
+  backdrop-filter:blur(10px);
+  text-align:center;
+  box-shadow:0 8px 25px rgba(93,52,64,.08);
+}
+
+.avatar{
+  width:76px;
+  height:76px;
+  margin:0 auto 10px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  border-radius:50%;
+  background:#f5dce1;
+  font-size:39px;
+}
+
+.person-name{
+  font-family:Georgia,serif;
+  font-size:21px;
+}
+
+.person-mood{
+  font-size:34px;
+  min-height:45px;
+  margin-top:7px;
+}
+
+.mood-message{
+  font-size:12px;
+  min-height:18px;
+  color:var(--muted);
+}
+
+/* CARDS */
+
+.card{
+  margin:14px 0;
+  padding:22px;
+  border-radius:28px;
+  background:var(--card);
+  backdrop-filter:blur(12px);
+  box-shadow:0 8px 30px rgba(93,52,64,.08);
+}
+
+.card h2{
+  font-family:Georgia,serif;
+  font-size:23px;
+  font-weight:normal;
+  margin-bottom:5px;
+}
+
+.card-description{
+  color:var(--muted);
+  font-size:13px;
+  margin-bottom:18px;
+}
+
+/* MOODS */
+
+.emoji-grid{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:8px;
+}
+
+.emoji{
+  border:2px solid transparent;
+  background:#fff;
+  border-radius:17px;
+  font-size:27px;
+  padding:10px 3px;
+  transition:.2s;
+}
+
+.emoji.selected{
+  border-color:#a64d63;
+  background:#fff0f3;
+  transform:scale(1.07);
+}
+
+.text-input{
+  width:100%;
+  margin-top:12px;
+  border:0;
+  outline:none;
+  background:#fff;
+  padding:14px 16px;
+  border-radius:17px;
+  color:var(--text);
+}
+
+/* NEED */
+
+.need-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:9px;
+}
+
+.need{
+  border:0;
+  padding:13px 8px;
+  border-radius:17px;
+  background:white;
+  color:var(--text);
+}
+
+.need.selected{
+  background:#8c354b;
+  color:white;
+}
+
+/* SAVE */
+
+.save{
+  width:100%;
+  margin-top:15px;
+  border:0;
+  border-radius:18px;
+  padding:15px;
+  background:#8c354b;
+  color:white;
+  font-weight:600;
+}
+
+/* GIFTS */
+
+.gifts{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:7px;
+}
+
+.gift{
+  border:0;
+  background:white;
+  padding:12px 3px;
+  border-radius:18px;
+}
+
+.gift span{
+  display:block;
+  font-size:27px;
+}
+
+.gift small{
+  display:block;
+  margin-top:4px;
+  font-size:9px;
+  color:#96717a;
+}
+
+/* RECEIVED */
+
+#received{
+  margin-top:15px;
+}
+
+.received-item{
+  padding:13px 15px;
+  margin-top:8px;
+  border-radius:17px;
+  background:#fff0f3;
+  font-size:13px;
+}
+
+/* BOTTOM */
+
+.bottom{
+  position:fixed;
+  bottom:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:min(600px,100%);
+  padding:11px 20px calc(11px + env(safe-area-inset-bottom));
+  background:rgba(255,248,247,.92);
+  backdrop-filter:blur(15px);
+  text-align:center;
+  border-top:1px solid rgba(130,60,80,.08);
+  font-size:12px;
+  color:var(--muted);
+}
+
+#who{
+  color:#84374c;
+  font-weight:600;
+}
+
+.change-user{
+  border:0;
+  background:none;
+  color:#9c6270;
+  text-decoration:underline;
+  margin-left:8px;
+  font-size:11px;
+}
+
+/* TOAST */
+
+#toast{
+  position:fixed;
+  left:50%;
+  bottom:90px;
+  transform:translate(-50%,30px);
+  background:#61313e;
+  color:white;
+  padding:12px 20px;
+  border-radius:30px;
+  opacity:0;
+  pointer-events:none;
+  transition:.3s;
+  z-index:2000;
+  text-align:center;
+  font-size:13px;
+}
+
+#toast.show{
+  opacity:1;
+  transform:translate(-50%,0);
+}
+
+@media(max-width:370px){
+  .emoji-grid{
+    grid-template-columns:repeat(5,1fr);
+  }
+
+  .emoji{
+    font-size:23px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- ВХОД -->
+
+<div id="login">
+
+  <div class="login-card">
+
+    <div class="login-heart">🏡❤️</div>
+
+    <h1>Наше место</h1>
+
+    <p>
+      Только для Эрики и Оливера
+    </p>
+
+    <div class="login-buttons">
+
+      <button onclick="chooseUser('Эрика')">
+        Я Эрика
+      </button>
+
+      <button onclick="chooseUser('Оливер')">
+        Я Оливер
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- ПРИЛОЖЕНИЕ -->
+
+<div id="app">
+
+<header>
+
+  <div class="logo">
+    наше место ♡
+  </div>
+
+  <div class="today" id="today"></div>
+
+</header>
+
+
+<!-- ДО ВСТРЕЧИ -->
+
+<section class="countdown">
+
+  <div class="countdown-small">
+    до нашей встречи
+  </div>
+
+  <div id="days">—</div>
+
+  <div class="days-word" id="daysWord">
+    дней ❤️
+  </div>
+
+</section>
+
+
+<!-- МЫ -->
+
+<section class="people">
+
+  <div class="person">
+
+    <div class="avatar">
+      👩🏻
+    </div>
+
+    <div class="person-name">
+      Эрика
+    </div>
+
+    <div class="person-mood" id="erikaMood">
+      🤍
+    </div>
+
+    <div class="mood-message" id="erikaMessage">
+      пока ничего
+    </div>
+
+  </div>
+
+
+  <div class="person">
+
+    <div class="avatar">
+      👨🏻
+    </div>
+
+    <div class="person-name">
+      Оливер
+    </div>
+
+    <div class="person-mood" id="oliverMood">
+      🤍
+    </div>
+
+    <div class="mood-message" id="oliverMessage">
+      пока ничего
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- НАСТРОЕНИЕ -->
+
+<section class="card">
+
+  <h2>Как ты сегодня?</h2>
+
+  <div class="card-description">
+    Расскажи другому без лишних слов
+  </div>
+
+  <div class="emoji-grid">
+
+    <button class="emoji" onclick="selectMood(this,'🥰')">🥰</button>
+    <button class="emoji" onclick="selectMood(this,'😌')">😌</button>
+    <button class="emoji" onclick="selectMood(this,'🥺')">🥺</button>
+    <button class="emoji" onclick="selectMood(this,'😔')">😔</button>
+    <button class="emoji" onclick="selectMood(this,'😭')">😭</button>
+
+    <button class="emoji" onclick="selectMood(this,'😡')">😡</button>
+    <button class="emoji" onclick="selectMood(this,'🥱')">🥱</button>
+    <button class="emoji" onclick="selectMood(this,'🤒')">🤒</button>
+    <button class="emoji" onclick="selectMood(this,'🤪')">🤪</button>
+    <button class="emoji" onclick="selectMood(this,'🔥')">🔥</button>
+
+  </div>
+
+  <input
+    id="moodMessage"
+    class="text-input"
+    maxlength="80"
+    placeholder="Хочешь что-нибудь добавить?"
+  >
+
+  <button class="save" onclick="saveMood()">
+    Сохранить настроение
+  </button>
+
+</section>
+
+
+<!-- ЧТО НУЖНО -->
+
+<section class="card">
+
+  <h2>Чего тебе хочется?</h2>
+
+  <div class="card-description">
+    Оливер или Эрика увидит это у себя
+  </div>
+
+  <div class="need-grid">
+
+    <button class="need" onclick="selectNeed(this,'🫂 Объятий')">
+      🫂 Объятий
+    </button>
+
+    <button class="need" onclick="selectNeed(this,'❤️ Внимания')">
+      ❤️ Внимания
+    </button>
+
+    <button class="need" onclick="selectNeed(this,'💬 Поговорить')">
+      💬 Поговорить
+    </button>
+
+    <button class="need" onclick="selectNeed(this,'😂 Рассмеши меня')">
+      😂 Рассмеши меня
+    </button>
+
+    <button class="need" onclick="selectNeed(this,'💋 Любви')">
+      💋 Любви
+    </button>
+
+    <button class="need" onclick="selectNeed(this,'🎁 Сюрприза')">
+      🎁 Сюрприза
+    </button>
+
+  </div>
+
+  <button class="save" onclick="saveNeed()">
+    Сохранить
+  </button>
+
+</section>
+
+
+<!-- ОТПРАВИТЬ -->
+
+<section class="card">
+
+  <h2 id="sendTitle">
+    Отправить кое-что ❤️
+  </h2>
+
+  <div class="card-description">
+    Маленький знак внимания прямо сейчас
+  </div>
+
+  <div class="gifts">
+
+    <button class="gift" onclick="sendGift('💋','поцелуй')">
+      <span>💋</span>
+      <small>поцелуй</small>
+    </button>
+
+    <button class="gift" onclick="sendGift('🫂','объятие')">
+      <span>🫂</span>
+      <small>обнять</small>
+    </button>
+
+    <button class="gift" onclick="sendGift('❤️','любовь')">
+      <span>❤️</span>
+      <small>любовь</small>
+    </button>
+
+    <button class="gift" onclick="sendGift('😂','смешинка')">
+      <span>😂</span>
+      <small>смешинка</small>
+    </button>
+
+    <button class="gift" onclick="sendGift('🎁','сюрприз')">
+      <span>🎁</span>
+      <small>сюрприз</small>
+    </button>
+
+  </div>
+
+</section>
+
+
+<!-- ПОЛУЧЕНО -->
+
+<section class="card">
+
+  <h2>Для тебя 💌</h2>
+
+  <div class="card-description">
+    Последние знаки внимания от твоего человека
+  </div>
+
+  <div id="received">
+    Пока здесь тихо 🤍
+  </div>
+
+</section>
+
+</div>
+
+
+<div class="bottom" id="bottom" style="display:none">
+
+  Ты вошёл(ла) как
+  <span id="who"></span>
+
+  <button class="change-user" onclick="changeUser()">
+    сменить
+  </button>
+
+</div>
+
+
+<div id="toast"></div>
+
+
+<script>
+
+/* =====================================================
+   ВСТАВЬ СВОИ ДАННЫЕ SUPABASE ТОЛЬКО СЮДА
+===================================================== */
+
+const SUPABASE_URL =
+  "https://wnutdzgujybadtdxcoci.supabase.co/rest/v1/";
+
+const SUPABASE_KEY =
+  "sb_publishable_UrqDzYksbHpz2KL4q2F5qw_fv9XmBVI";
+
+
+/* =====================================================
+   SUPABASE
+===================================================== */
+
+const db = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+
+/* =====================================================
+   НАСТРОЙКИ
+===================================================== */
+
+const MEETING_DATE =
+  new Date("2026-11-06T00:00:00");
+
+let currentUser = null;
+let selectedMood = null;
+let selectedNeed = null;
+
+
+/* =====================================================
+   ВХОД
+===================================================== */
+
+function chooseUser(name){
+
+  currentUser = name;
+
+  localStorage.setItem(
+    "ourPlaceUser",
+    name
+  );
+
+  openApp();
+}
+
+
+function changeUser(){
+
+  localStorage.removeItem(
+    "ourPlaceUser"
+  );
+
+  location.reload();
+}
+
+
+function openApp(){
+
+  document.getElementById("login")
+    .style.display="none";
+
+  document.getElementById("app")
+    .style.display="block";
+
+  document.getElementById("bottom")
+    .style.display="block";
+
+  document.getElementById("who")
+    .textContent=currentUser;
+
+  const partner =
+    currentUser==="Эрика"
+    ? "Оливер"
+    : "Эрика";
+
+  document.getElementById("sendTitle")
+    .textContent=
+    "Отправить для " + partner + " ❤️";
+
+  loadEverything();
+}
+
+
+/* =====================================================
+   ДАТА
+===================================================== */
+
+function updateDate(){
+
+  const now=new Date();
+
+  document.getElementById("today")
+    .textContent=
+    now.toLocaleDateString(
+      "ru-RU",
+      {
+        day:"numeric",
+        month:"long"
+      }
+    );
+
+  const today =
+    new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate()
+    );
+
+  const meeting =
+    new Date(
+      MEETING_DATE.getFullYear(),
+      MEETING_DATE.getMonth(),
+      MEETING_DATE.getDate()
+    );
+
+  const diff =
+    Math.max(
+      0,
+      Math.ceil(
+        (meeting-today)/
+        86400000
+      )
+    );
+
+  document.getElementById("days")
+    .textContent=diff;
+
+  document.getElementById("daysWord")
+    .textContent=
+    dayWord(diff)+" ❤️";
+}
+
+
+function dayWord(number){
+
+  const n=number%100;
+  const n1=number%10;
+
+  if(n>10 && n<20)
+    return "дней";
+
+  if(n1===1)
+    return "день";
+
+  if(n1>=2 && n1<=4)
+    return "дня";
+
+  return "дней";
+}
+
+
+/* =====================================================
+   MOOD
+===================================================== */
+
+function selectMood(button,mood){
+
+  selectedMood=mood;
+
+  document
+    .querySelectorAll(".emoji")
+    .forEach(x=>
+      x.classList.remove("selected")
+    );
+
+  button.classList.add("selected");
+}
+
+
+async function saveMood(){
+
+  if(!selectedMood){
+    toast("Сначала выбери настроение 🥺");
+    return;
+  }
+
+  const message=
+    document
+      .getElementById("moodMessage")
+      .value.trim();
+
+  const today=
+    new Date()
+      .toISOString()
+      .slice(0,10);
+
+  const {error}=
+    await db
+      .from("moods")
+      .upsert(
+        {
+          person:currentUser,
+          mood:selectedMood,
+          message:message,
+          day:today
+        },
+        {
+          onConflict:"person,day"
+        }
+      );
+
+  if(error){
+
+    console.error(error);
+    toast("Что-то пошло не так 😭");
+    return;
+  }
+
+  toast("Настроение сохранено ❤️");
+
+  loadMoods();
+}
+
+
+async function loadMoods(){
+
+  const today=
+    new Date()
+      .toISOString()
+      .slice(0,10);
+
+  const {data,error}=
+    await db
+      .from("moods")
+      .select("*")
+      .eq("day",today);
+
+  if(error){
+    console.error(error);
+    return;
+  }
+
+  document.getElementById("erikaMood")
+    .textContent="🤍";
+
+  document.getElementById("oliverMood")
+    .textContent="🤍";
+
+  document.getElementById("erikaMessage")
+    .textContent="пока ничего";
+
+  document.getElementById("oliverMessage")
+    .textContent="пока ничего";
+
+  data.forEach(item=>{
+
+    if(item.person==="Эрика"){
+
+      document.getElementById("erikaMood")
+        .textContent=item.mood;
+
+      document.getElementById("erikaMessage")
+        .textContent=
+        item.message || "без слов";
+
+    }
+
+    if(item.person==="Оливер"){
+
+      document.getElementById("oliverMood")
+        .textContent=item.mood;
+
+      document.getElementById("oliverMessage")
+        .textContent=
+        item.message || "без слов";
+
+    }
+
+  });
+}
+
+
+/* =====================================================
+   NEEDS
+===================================================== */
+
+function selectNeed(button,need){
+
+  selectedNeed=need;
+
+  document
+    .querySelectorAll(".need")
+    .forEach(x=>
+      x.classList.remove("selected")
+    );
+
+  button.classList.add("selected");
+}
+
+
+async function saveNeed(){
+
+  if(!selectedNeed){
+    toast("Выбери, чего тебе хочется ❤️");
+    return;
+  }
+
+  const today=
+    new Date()
+      .toISOString()
+      .slice(0,10);
+
+  const {error}=
+    await db
+      .from("needs")
+      .upsert(
+        {
+          person:currentUser,
+          need:selectedNeed,
+          day:today
+        },
+        {
+          onConflict:"person,day"
+        }
+      );
+
+  if(error){
+
+    console.error(error);
+    toast("Не получилось сохранить 😭");
+    return;
+  }
+
+  toast("Оливер/Эрика теперь это увидит ❤️");
+
+  loadNeeds();
+}
+
+
+async function loadNeeds(){
+
+  const today=
+    new Date()
+      .toISOString()
+      .slice(0,10);
+
+  const partner=
+    currentUser==="Эрика"
+    ? "Оливер"
+    : "Эрика";
+
+  const {data,error}=
+    await db
+      .from("needs")
+      .select("*")
+      .eq("person",partner)
+      .eq("day",today)
+      .maybeSingle();
+
+  if(error){
+    console.error(error);
+    return;
+  }
+
+  if(data){
+
+    toast(
+      partner+
+      " сегодня хочет: "+
+      data.need
+    );
+
+  }
+}
+
+
+/* =====================================================
+   GIFTS
+===================================================== */
+
+async function sendGift(emoji,name){
+
+  const receiver=
+    currentUser==="Эрика"
+    ? "Оливер"
+    : "Эрика";
+
+  const {error}=
+    await db
+      .from("gifts")
+      .insert({
+        sender:currentUser,
+        receiver:receiver,
+        gift:emoji+" "+name
+      });
+
+  if(error){
+
+    console.error(error);
+    toast("Не отправилось 😭");
+    return;
+  }
+
+  toast(
+    emoji+
+    " отправлено для "+
+    receiver
+  );
+}
+
+
+async function loadGifts(){
+
+  const {data,error}=
+    await db
+      .from("gifts")
+      .select("*")
+      .eq("receiver",currentUser)
+      .order(
+        "created_at",
+        {ascending:false}
+      )
+      .limit(5);
+
+  if(error){
+    console.error(error);
+    return;
+  }
+
+  const box=
+    document.getElementById("received");
+
+  if(!data || data.length===0){
+
+    box.innerHTML=
+      "Пока здесь тихо 🤍";
+
+    return;
+  }
+
+  box.innerHTML="";
+
+  data.forEach(item=>{
+
+    const div=
+      document.createElement("div");
+
+    div.className=
+      "received-item";
+
+    const date=
+      new Date(item.created_at);
+
+    div.textContent=
+      item.sender+
+      " отправил(а): "+
+      item.gift+
+      " · "+
+      date.toLocaleTimeString(
+        "ru-RU",
+        {
+          hour:"2-digit",
+          minute:"2-digit"
+        }
+      );
+
+    box.appendChild(div);
+
+  });
+}
+
+
+/* =====================================================
+   REALTIME
+===================================================== */
+
+function startRealtime(){
+
+  db.channel("our-place-live")
+
+    .on(
+      "postgres_changes",
+      {
+        event:"*",
+        schema:"public",
+        table:"moods"
+      },
+      ()=>{
+        loadMoods();
+      }
+    )
+
+    .on(
+      "postgres_changes",
+      {
+        event:"*",
+        schema:"public",
+        table:"needs"
+      },
+      ()=>{
+        loadNeeds();
+      }
+    )
+
+    .on(
+      "postgres_changes",
+      {
+        event:"INSERT",
+        schema:"public",
+        table:"gifts"
+      },
+      payload=>{
+
+        if(
+          payload.new.receiver===
+          currentUser
+        ){
+
+          loadGifts();
+
+          toast(
+            "У тебя новое послание 💌"
+          );
+        }
+      }
+    )
+
+    .subscribe();
+}
+
+
+/* =====================================================
+   LOAD
+===================================================== */
+
+async function loadEverything(){
+
+  updateDate();
+
+  await loadMoods();
+  await loadNeeds();
+  await loadGifts();
+
+  startRealtime();
+}
+
+
+/* =====================================================
+   TOAST
+===================================================== */
+
+let toastTimer;
+
+function toast(text){
+
+  const element=
+    document.getElementById("toast");
+
+  element.textContent=text;
+
+  element.classList.add("show");
+
+  clearTimeout(toastTimer);
+
+  toastTimer=
+    setTimeout(
+      ()=>{
+        element.classList.remove("show");
+      },
+      2800
+    );
+}
+
+
+/* =====================================================
+   START
+===================================================== */
+
+window.addEventListener(
+  "DOMContentLoaded",
+  ()=>{
+
+    updateDate();
+
+    const saved=
+      localStorage.getItem(
+        "ourPlaceUser"
+      );
+
+    if(
+      saved==="Эрика" ||
+      saved==="Оливер"
+    ){
+
+      currentUser=saved;
+      openApp();
+
+    }
+
+  }
+);
+
+</script>
+
+</body>
+</html>
