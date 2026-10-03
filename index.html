@@ -341,22 +341,6 @@ function playPetAnimation(type){
   if(type==='pet') img.src='basenji-pet.png';
   if(type==='play') img.src='basenji-play.png';
 }
-
-    sprite.className='pet-feed-sprite playing';
-
-    setTimeout(()=>{
-      sprite.remove();
-      img.style.display='block';
-      img.src='basenji-idle.png';
-    },4000);
-
-    return;
-  }
-
-  if(type==='pet') img.src='basenji-pet.png';
-  if(type==='play') img.src='basenji-play.png';
-}
-
 async function petAction(type){
  const{data}=await db.from('our_pet').select('*').limit(1).maybeSingle();if(!data)return;
  let hunger=data.hunger??100,happiness=data.happiness??100,affection=data.affection??0;
