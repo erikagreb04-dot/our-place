@@ -55,37 +55,14 @@
 @media(min-width:561px){body{background:#160e0d}.scene{box-shadow:0 0 70px #000}}
 
 /* v4 animated pet actions */
-.action-bowl,.action-hand,.action-ball,.action-heart{display:none;position:absolute;z-index:5;pointer-events:none}
-.pet-scene.feed .action-bowl{display:block;font-size:58px;left:42%;bottom:5%;animation:bowlNibble .55s ease-in-out infinite alternate}
-.pet-scene.feed img{animation:eatingDog .48s ease-in-out infinite alternate!important}
-.pet-scene.pet .action-hand{display:block;font-size:70px;right:14%;top:4%;animation:strokingHand .72s ease-in-out infinite alternate}
-.pet-scene.pet .action-heart{display:block;font-size:42px;right:27%;top:30%;animation:floatHeart 1.1s ease-out infinite}
-.pet-scene.pet img{animation:cuddleDog .72s ease-in-out infinite alternate!important}
-.pet-scene.play .action-ball{display:block;font-size:54px;left:18%;bottom:12%;animation:rollingBall 1.15s ease-in-out infinite alternate}
-.pet-scene.play img{animation:playingDog .58s ease-in-out infinite alternate!important}
-@keyframes eatingDog{to{transform:translateY(12px) rotate(1.5deg) scale(1.015)}}@keyframes bowlNibble{to{transform:translateX(5px) rotate(4deg)}}
-@keyframes strokingHand{to{transform:rotate(-20deg) translate(-20px,34px)}}@keyframes cuddleDog{to{transform:rotate(-2deg) translateX(-9px) scale(1.025)}}
-@keyframes floatHeart{0%{opacity:0;transform:translateY(20px) scale(.6)}50%{opacity:1}100%{opacity:0;transform:translateY(-42px) scale(1.15)}}
-@keyframes rollingBall{to{transform:translateX(145px) rotate(280deg)}}@keyframes playingDog{0%{transform:translate(-5px,4px) rotate(-1deg)}50%{transform:translate(10px,-9px) rotate(2deg) scale(1.025)}100%{transform:translate(20px,2px) rotate(-1deg)}}
-
 
 /* v5 — pet actions play as little scenes */
 .pet-actions button:disabled{opacity:.58;transform:none!important;cursor:wait}
-.action-progress{display:none;position:absolute;left:8%;right:8%;bottom:9px;height:6px;background:rgba(255,255,255,.65);border-radius:99px;overflow:hidden;z-index:8}
-.action-progress i{display:block;width:0;height:100%;background:#b23355;border-radius:99px}
-.pet-scene.feed .action-progress,.pet-scene.pet .action-progress,.pet-scene.play .action-progress{display:block}
-.pet-scene.feed .action-progress i{animation:actionTimer 8s linear forwards}
-.pet-scene.pet .action-progress i{animation:actionTimer 7s linear forwards}
 .pet-scene.play .action-progress i{animation:actionTimer 9s linear forwards}
 .action-spark{display:none;position:absolute;z-index:6;font-size:34px;color:white;text-shadow:0 2px 8px #8b4c48}
 .pet-scene.pet .action-spark{display:block;left:30%;top:25%;animation:sparkFloat 1.4s ease-out infinite .35s}
 .pet-scene.feed:after{content:"";position:absolute;left:30%;bottom:18%;width:42%;height:15%;background:radial-gradient(ellipse,rgba(63,30,19,.25),transparent 68%);animation:foodShadow .5s ease-in-out infinite alternate}
 .pet-scene.play:after{content:"";position:absolute;left:12%;right:12%;bottom:15%;height:4px;background:rgba(91,47,33,.13);border-radius:50%;animation:playShadow 1.15s ease-in-out infinite alternate}
-@keyframes actionTimer{to{width:100%}}
-@keyframes sparkFloat{0%{opacity:0;transform:translate(0,18px) scale(.5)}45%{opacity:1}100%{opacity:0;transform:translate(-12px,-38px) scale(1.15)}}
-@keyframes foodShadow{to{transform:scaleX(.88)}}
-@keyframes playShadow{to{transform:translateX(50px) scaleX(.75)}}
-
 /* More lifelike repeated body motion */
 .pet-scene.feed img{animation:eatSequence .72s ease-in-out infinite!important;transform-origin:52% 72%}
 .pet-scene.pet img{animation:petSequence 1.15s ease-in-out infinite!important;transform-origin:55% 72%}
@@ -317,7 +294,7 @@ async function openPet(){
  const name=(data.name&&data.name!=='???')?data.name:'Наш пёс',h=Math.max(0,Math.min(100,data.hunger??100)),happy=Math.max(0,Math.min(100,data.happiness??100)),affection=Math.max(0,data.affection??0),age=petAge(data);
  show(`<h2>${esc(name)} ♡</h2><div class="sub">Ваш басенджи · растёт вместе с вами.</div>
  <div class="pet-stage">День ${age.days+1} · ${age.label}</div>
- <div class="pet-scene" id="petDogPhoto"><img id="petSceneImg" src="basenji-idle.png" alt="Щенок басенджи"><div class="action-bowl">🥣</div><div class="action-hand">🫳🏻</div><div class="action-ball">🧶</div><div class="action-heart">♡</div><div class="action-spark">♡</div><div class="action-progress"><i></i></div></div>
+ <div class="pet-scene" id="petDogPhoto"><img id="petSceneImg" src="basenji-idle.png" alt="Щенок басенджи"><div class="action-hand">🫳🏻</div><div class="action-ball">🧶</div><div class="action-heart">♡</div><div class="action-spark">♡</div><div class="action-progress"><i></i></div></div>
  <div id="petActionNote" class="pet-action-note">Сейчас отдыхает рядом с вами ♡</div>
  <div class="earned">🥣 Сытость <b>${h}%</b> · ❤️ Счастье <b>${happy}%</b><br>💕 Привязанность <b>${affection}</b></div>
  <div class="pet-actions"><button onclick="petAction('feed')"><span>🥣</span>Покормить</button><button onclick="petAction('pet')"><span>🤍</span>Погладить</button><button onclick="petAction('play')"><span>🧶</span>Поиграть</button></div>
