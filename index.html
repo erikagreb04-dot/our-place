@@ -141,7 +141,6 @@ async function chooseUser(n){
 
   currentUser=n;
   localStorage.setItem('ourPlaceUser',n);
-  location.reload();
 }
 async function restoreLogin(){
   const savedUser=localStorage.getItem('ourPlaceUser');
