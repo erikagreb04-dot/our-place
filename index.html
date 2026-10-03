@@ -120,7 +120,43 @@ const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 const MEETING_DATE=new Date(2026,10,6);let currentUser=null,selectedMood=null,selectedNeed=null;
 const partner=()=>currentUser==='Эрика'?'Оливер':'Эрика';
 function localDay(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
-function chooseUser(n){currentUser=n;localStorage.setItem('ourPlaceUser',n);document.getElementById('login').style.display='none';document.getElementById('app').style.display='block';loadAll();startRealtime()}
+async function chooseUser(n){
+  const email=prompt('Email для '+n+':');
+  if(!email)return;
+
+  const password=prompt('Пароль:');
+  if(!password)return;
+
+  const {data,error}=await db.auth.signInWithPassword({
+    email:email.trim(),
+    password:password
+  });
+
+  if(error){
+    alert('Неверный email или пароль');
+    return;
+  }
+
+  currentUser=n;
+  localStorage.setItem('ourPlaceUser',n);
+  location.reload();
+}
+  async function restoreLogin(){
+  const {data:{session}}=await db.auth.getSession();
+
+  if(!session){
+    currentUser=null;
+    localStorage.removeItem('ourPlaceUser');
+    return;
+  }
+
+  currentUser=localStorage.getItem('ourPlaceUser');
+
+  if(!currentUser){
+    await db.auth.signOut();
+    return;
+  }
+}
 function calcDays(){const n=new Date(),t=new Date(n.getFullYear(),n.getMonth(),n.getDate());const d=Math.max(0,Math.ceil((MEETING_DATE-t)/86400000));days.textContent=d;daysWord.textContent=dayWord(d)}
 function dayWord(n){if(n%100>10&&n%100<20)return'дней';if(n%10===1)return'день';if(n%10>=2&&n%10<=4)return'дня';return'дней'}
 function show(html){modalBody.innerHTML=html;modalWrap.classList.add('show')}function closeModal(){modalWrap.classList.remove('show')}function backdrop(e){if(e.target===modalWrap)closeModal()}
@@ -772,7 +808,8 @@ function startRealtime(){db.channel('our-place-v3')
 .on('postgres_changes',{event:'*',schema:'public',table:'house_game'},()=>{if(modalWrap.classList.contains('show')&&modalBody.textContent.includes('Строим наш дом'))openGame()})
 .on('postgres_changes',{event:'INSERT',schema:'public',table:'gifts'},p=>{if(p.new.receiver===currentUser)toast('Для тебя '+p.new.gift+' 💌')})
 .subscribe()}
-window.addEventListener('DOMContentLoaded',()=>{calcDays();setTimeout(checkPartnerNeed,2500);const s=localStorage.getItem('ourPlaceUser');if(s==='Эрика'||s==='Оливер')chooseUser(s)})
+window.addEventListener('DOMContentLoaded',async()=>{
+  await restoreLogin();calcDays();setTimeout(checkPartnerNeed,2500);const s=localStorage.getItem('ourPlaceUser');if(s==='Эрика'||s==='Оливер')chooseUser(s)})
   async function checkPartnerNeed(){
   if(!currentUser)return;
   const who=partner();
