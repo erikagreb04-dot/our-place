@@ -121,7 +121,7 @@ const MEETING_DATE=new Date(2026,10,6);let currentUser=null,selectedMood=null,se
 const partner=()=>currentUser==='Эрика'?'Оливер':'Эрика';
 function localDay(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 async function chooseUser(n){
-  const email=prompt('Email для '+n+':');
+  const email=prompt('Email:');
   if(!email)return;
 
   const password=prompt('Пароль:');
@@ -137,11 +137,24 @@ async function chooseUser(n){
     return;
   }
 
-  currentUser=n;
-  localStorage.setItem('ourPlaceUser',n);
+  const realEmail=data.user.email?.toLowerCase();
+
+  const realUser=
+    realEmail==='erikagreb04@gmail.com' ? 'Эрика' :
+    realEmail==='oliver.bekeraitis@gmail.com' ? 'Оливер' :
+    null;
+
+  if(!realUser || realUser!==n){
+    await db.auth.signOut();
+    alert('Это аккаунт другого пользователя ♡');
+    return;
+  }
+
+  currentUser=realUser;
+  localStorage.setItem('ourPlaceUser',realUser);
   location.reload();
 }
-  async function restoreLogin(){
+async function restoreLogin(){
   const {data:{session}}=await db.auth.getSession();
 
   if(!session){
@@ -150,12 +163,20 @@ async function chooseUser(n){
     return;
   }
 
-  currentUser=localStorage.getItem('ourPlaceUser');
+  const email=session.user.email?.toLowerCase();
 
-  if(!currentUser){
+  if(email==='erikagreb04@gmail.com'){
+    currentUser='Эрика';
+  }else if(email==='oliver.bekeraitis@gmail.com'){
+    currentUser='Оливер';
+  }else{
+    currentUser=null;
+    localStorage.removeItem('ourPlaceUser');
     await db.auth.signOut();
     return;
   }
+
+  localStorage.setItem('ourPlaceUser',currentUser);
 }
 function calcDays(){const n=new Date(),t=new Date(n.getFullYear(),n.getMonth(),n.getDate());const d=Math.max(0,Math.ceil((MEETING_DATE-t)/86400000));days.textContent=d;daysWord.textContent=dayWord(d)}
 function dayWord(n){if(n%100>10&&n%100<20)return'дней';if(n%10===1)return'день';if(n%10>=2&&n%10<=4)return'дня';return'дней'}
