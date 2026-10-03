@@ -369,6 +369,13 @@ async function openPhotos(){
     <h2>Наши фото 📸</h2>
     <div class="sub">Наш маленький общий альбом ♡</div>
 <div id="photoChallengeCard"></div>
+<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin:14px 0 6px">
+  <button onclick="changePhotoDay(-1)" style="border:0;background:#f3e4df;border-radius:50%;width:42px;height:42px;font-size:20px;cursor:pointer">‹</button>
+
+  <div id="photoDiaryDate" style="text-align:center;font-family:Georgia,serif;font-size:17px;font-weight:700;color:#583d43"></div>
+
+  <button onclick="changePhotoDay(1)" style="border:0;background:#f3e4df;border-radius:50%;width:42px;height:42px;font-size:20px;cursor:pointer">›</button>
+</div>
     <div style="margin-top:18px">
       <input id="photoInput" type="file" accept="image/*" style="display:none" onchange="previewPhoto(this)">
       <button class="primary" onclick="document.getElementById('photoInput').click()">
@@ -382,6 +389,7 @@ async function openPhotos(){
 
   await loadPhotos();
   renderPhotoChallenge();
+updatePhotoDiaryDate();
 }
 function previewPhoto(input){
   const file=input.files[0];
@@ -435,12 +443,47 @@ function previewPhoto(input){
   toast('Фото в нашем альбоме ❤️');
   await openPhotos();
 }
+let photoDiaryDay=localDay();
+async function changePhotoDay(amount){
+  const d=new Date(photoDiaryDay+'T12:00:00');
+  d.setDate(d.getDate()+amount);
+
+  const today=localDay();
+  const next=[
+    d.getFullYear(),
+    String(d.getMonth()+1).padStart(2,'0'),
+    String(d.getDate()).padStart(2,'0')
+  ].join('-');
+
+  if(next>today)return;
+
+  photoDiaryDay=next;
+  await loadPhotos();
+  renderPhotoChallenge();
+  updatePhotoDiaryDate();
+}
+
+function updatePhotoDiaryDate(){
+  const el=document.getElementById('photoDiaryDate');
+  if(!el)return;
+
+  const d=new Date(photoDiaryDay+'T12:00:00');
+  const today=photoDiaryDay===localDay();
+
+  el.innerHTML=`
+    ${today?'Сегодня · ':''}${d.toLocaleDateString('ru-RU',{
+      day:'numeric',
+      month:'long'
+    })} ♡
+  `;
+}
   async function loadPhotos(){
   const wall=document.getElementById('photoWall');
   if(!wall)return;
 
   const {data:photos,error}=await db.from('daily_photos')
     .select('*')
+  .eq('day',photoDiaryDay)
     .order('created_at',{ascending:false});
 
   if(error){
@@ -461,30 +504,209 @@ function previewPhoto(input){
     return;
   }
 
-  wall.innerHTML='<div id="photoGrid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px"></div>';
-  const grid=document.getElementById('photoGrid');
+  const people=['Эрика','Оливер'];
+  const byPerson={};
+
+  for(const person of people){
+    byPerson[person]=photos.find(p=>p.person===person)||null;
+  }
+
+  const signedUrls={};
 
   for(const photo of photos){
     const {data:signed}=await db.storage
       .from('our-photos')
       .createSignedUrl(photo.photo_url,3600);
 
-    if(!signed?.signedUrl)continue;
+    if(signed?.signedUrl)signedUrls[photo.id]=signed.signedUrl;
+  }
 
-    const card=document.createElement('div');
-    card.style.cssText='background:#fff7f2;padding:7px;border-radius:16px;overflow:hidden';
-    card.innerHTML=`
-      <img src="${signed.signedUrl}"
-        style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:12px;cursor:pointer"
-        onclick="openPhotoBig('${signed.signedUrl}',${photo.id})">
+  const memoryDate=new Date(photoDiaryDay+'T12:00:00')
+    .toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'});
 
-      <div style="padding:7px 3px 3px">
-        <div style="font-size:12px;font-weight:700">${esc(photo.person)}</div>
-        ${photo.caption?`<div style="font-size:13px;margin-top:3px">${esc(photo.caption)}</div>`:''}
+  const makePolaroid=(person,rotation)=>{
+    const photo=byPerson[person];
+
+    if(!photo){
+      return `
+        <div style="
+          background:#fffdf8;
+          padding:10px 10px 18px;
+          border-radius:4px;
+          box-shadow:0 7px 18px rgba(82,55,48,.16);
+          transform:rotate(${rotation}deg);
+          position:relative;
+          min-width:0;
+        ">
+          <div style="
+            position:absolute;
+            width:54px;height:17px;
+            background:rgba(226,190,151,.65);
+            top:-8px;left:50%;
+            transform:translateX(-50%) rotate(-3deg);
+          "></div>
+
+          <div style="
+            aspect-ratio:1/1;
+            background:#f3e8df;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            text-align:center;
+            padding:12px;
+            box-sizing:border-box;
+            color:#a5867d;
+            font-size:13px;
+          ">
+            📷<br><br>Жду фото<br>${person} ♡
+          </div>
+
+          <div style="
+            font-family:Georgia,serif;
+            font-weight:700;
+            text-align:center;
+            margin-top:10px;
+            color:#503b36;
+          ">${person}</div>
+        </div>
+      `;
+    }
+
+    const url=signedUrls[photo.id];
+    if(!url)return '';
+
+    return `
+      <div style="
+        background:#fffdf8;
+        padding:10px 10px 16px;
+        border-radius:4px;
+        box-shadow:0 7px 18px rgba(82,55,48,.18);
+        transform:rotate(${rotation}deg);
+        position:relative;
+        min-width:0;
+      ">
+        <div style="
+          position:absolute;
+          width:58px;height:18px;
+          background:rgba(226,190,151,.7);
+          top:-9px;left:50%;
+          transform:translateX(-50%) rotate(3deg);
+          z-index:2;
+        "></div>
+
+        <img src="${url}"
+          onclick="openPhotoBig('${url}',${photo.id})"
+          style="
+            width:100%;
+            aspect-ratio:1/1;
+            object-fit:cover;
+            display:block;
+            cursor:pointer;
+          ">
+
+        <div style="
+          font-family:Georgia,serif;
+          font-weight:700;
+          text-align:center;
+          margin-top:9px;
+          color:#503b36;
+        ">${person}</div>
+
+        ${photo.caption?`
+          <div style="
+            text-align:center;
+            font-size:12px;
+            color:#806b65;
+            margin-top:4px;
+          ">${esc(photo.caption)}</div>
+        `:''}
       </div>
     `;
-    grid.appendChild(card);
-  }
+  };
+
+  wall.innerHTML=`
+    <div style="
+      position:relative;
+      margin-top:18px;
+      padding:30px 18px 28px;
+      border-radius:28px;
+      overflow:hidden;
+      background:
+        radial-gradient(circle at 12% 15%,rgba(180,114,121,.10) 0 2px,transparent 3px),
+        radial-gradient(circle at 85% 80%,rgba(180,114,121,.09) 0 2px,transparent 3px),
+        linear-gradient(135deg,#f4e8d7,#f8efe4 48%,#eadccf);
+      box-shadow:inset 0 0 0 1px rgba(116,82,67,.08),0 10px 30px rgba(73,48,43,.10);
+    ">
+
+      <div style="
+        position:absolute;
+        top:13px;left:16px;
+        font-size:22px;
+        opacity:.45;
+        transform:rotate(-15deg);
+      ">♡</div>
+
+      <div style="
+        position:absolute;
+        right:18px;top:16px;
+        font-size:18px;
+        opacity:.45;
+        transform:rotate(12deg);
+      ">✦</div>
+
+      <div style="
+        text-align:center;
+        font-family:Georgia,serif;
+        color:#6b4b43;
+        margin-bottom:28px;
+      ">
+        <div style="font-size:12px;letter-spacing:2px;text-transform:uppercase">
+          наша страница дня
+        </div>
+        <div style="font-size:23px;margin-top:5px">
+          ${memoryDate} ♡
+        </div>
+      </div>
+
+      <div style="
+        display:grid;
+        grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+        gap:18px;
+        align-items:start;
+        padding:4px 3px 12px;
+      ">
+        ${makePolaroid('Эрика',-2)}
+        ${makePolaroid('Оливер',2)}
+      </div>
+
+      <div style="
+        text-align:center;
+        margin-top:25px;
+        font-family:Georgia,serif;
+        font-style:italic;
+        color:#92766d;
+        font-size:14px;
+      ">
+        ${byPerson['Эрика']&&byPerson['Оливер']
+          ?'♡ Наш маленький момент сохранён ♡'
+          :'ещё не вся история этого дня написана...'}
+      </div>
+
+      <div style="
+        position:absolute;
+        left:20px;bottom:13px;
+        opacity:.35;
+        transform:rotate(-8deg);
+      ">✎ memories</div>
+
+      <div style="
+        position:absolute;
+        right:20px;bottom:12px;
+        font-size:20px;
+        opacity:.35;
+      ">♡</div>
+    </div>
+  `;
 }
 function openPhotoBig(url,id){
   show(`
