@@ -787,6 +787,10 @@ function startRealtime(){db.channel('our-place-v3')
 .subscribe()}
 window.addEventListener('DOMContentLoaded',async()=>{
   await restoreLogin();calcDays();setTimeout(checkPartnerNeed,2500);if(currentUser){await loadAll();startRealtime();}})
+if(currentUser){
+  document.getElementById('login').style.display='none';
+  document.getElementById('app').style.display='block';
+}
   async function checkPartnerNeed(){
   if(!currentUser)return;
   const who=partner();
