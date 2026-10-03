@@ -155,7 +155,7 @@ function pickMood(b,m){selectedMood=m;document.querySelectorAll('.pick').forEach
 async function saveMood(){if(!selectedMood)return toast('Выбери настроение ♡');const message=document.getElementById('statusText').value.trim();const {error}=await db.from('moods').upsert({person:currentUser,mood:selectedMood,message,day:localDay()},{onConflict:'person,day'});if(error){console.error(error);return toast('Не сохранилось 😭')}closeModal();await loadMoods();toast('Статус на сегодня готов ♡')}
 function openNeed(){selectedNeed=null;const arr=['🫂 Объятий','❤️ Внимания','💬 Поговорить','😂 Рассмеши меня','💋 Любви','🧘 Побыть одному'];show(`<h2>Что тебе сейчас нужно?</h2><div class="sub">${partner()} увидит это.</div><div class="choices">${arr.map(x=>`<button class="choice" onclick="pickNeed(this,'${x}')">${x}</button>`).join('')}</div><button class="primary" onclick="saveNeed()">Сохранить ♡</button>`)}
 function pickNeed(b,n){selectedNeed=n;document.querySelectorAll('.choice').forEach(x=>x.style.background='#fff');b.style.background='#f5d8dc'}
-async function saveNeed(){if(!selectedNeed)return toast('Сначала выбери ♡');const {error}=await db.from('needs').upsert({person:currentUser,need:selectedNeed,day:localDay()},{onConflict:'person,day'});if(error)return toast('Не сохранилось 😭');closeModal();toast(partner()+' увидит это ❤️')}
+async function saveNeed(){if(!selectedNeed)return toast('Сначала выбери ♡');const {error}=await db.from('needs').upsert({person:currentUser,need:selectedNeed,day:localDay(),seen:false},{onConflict:'person,day'});if(error)return toast('Не сохранилось 😭');closeModal();toast(partner()+' увидит это ❤️')}
 async function openSend(){show(`<h2>Отправить ${partner()} ♡</h2><div class="sub">Маленькое действие прямо сейчас.</div><div class="gift-row">${[['💋','поцелуй'],['🫂','объятие'],['❤️','любовь'],['😂','смешинку'],['🎁','сюрприз']].map(x=>`<button class="gift" onclick="sendGift('${x[0]}','${x[1]}')">${x[0]}</button>`).join('')}</div>`)}
 async function sendGift(e,n){const {error}=await db.from('gifts').insert({sender:currentUser,receiver:partner(),gift:e+' '+n});if(error)return toast('Не отправилось 😭');closeModal();toast(e+' отправлено '+partner())}
 async function openNotes(){const {data}=await db.from('notes').select('*').order('created_at',{ascending:false}).limit(12);show(`<h2>Записки</h2><div class="sub">Оставь что-нибудь ${partner()} на нашей стене.</div><textarea id="noteText" class="field" maxlength="180" placeholder="Написать записку..."></textarea><button class="primary" onclick="saveNote()">Приклеить записку 📝</button><div>${(data||[]).map(n=>`<div class="note"><b>${n.sender}</b><br>${esc(n.message)}</div>`).join('')||'<div class="sub">Пока записок нет.</div>'}</div>`)}
@@ -375,7 +375,47 @@ function startRealtime(){db.channel('our-place-v3')
 .on('postgres_changes',{event:'*',schema:'public',table:'house_game'},()=>{if(modalWrap.classList.contains('show')&&modalBody.textContent.includes('Строим наш дом'))openGame()})
 .on('postgres_changes',{event:'INSERT',schema:'public',table:'gifts'},p=>{if(p.new.receiver===currentUser)toast('Для тебя '+p.new.gift+' 💌')})
 .subscribe()}
-window.addEventListener('DOMContentLoaded',()=>{calcDays();const s=localStorage.getItem('ourPlaceUser');if(s==='Эрика'||s==='Оливер')chooseUser(s)})
+window.addEventListener('DOMContentLoaded',()=>{calcDays();setTimeout(checkPartnerNeed,2500);const s=localStorage.getItem('ourPlaceUser');if(s==='Эрика'||s==='Оливер')chooseUser(s)})
+  async function checkPartnerNeed(){
+  if(!currentUser)return;
+  const who=partner();
+  const {data,error}=await db.from('needs')
+    .select('*')
+    .eq('person',who)
+    .eq('day',localDay())
+    .eq('seen',false)
+    .maybeSingle();
+
+  if(error||!data)return;
+
+  const phrases={
+    '🫂 Объятий':'Сейчас особенно хочется оказаться в твоих объятиях ♡',
+    '❤️ Внимания':'Немного твоего внимания сейчас сделает день теплее ♡',
+    '💬 Поговорить':'Хочется немного побыть рядом и поговорить ♡',
+    '😂 Рассмеши меня':'Срочно требуется порция твоих шуток ♡',
+    '💋 Любви':'Сегодня нужно чуть больше твоей любви ♡',
+    '🙏 Побыть одному':'Сейчас хочется немного времени для себя ♡'
+  };
+
+  show(`
+    <div style="text-align:center;padding:8px 4px 4px">
+      <div style="font-size:48px;margin-bottom:8px">💌</div>
+      <div class="sub">Маленькая открытка для тебя</div>
+      <h2 style="margin:12px 0 6px">${who} сейчас хочет...</h2>
+      <div style="font-size:28px;font-weight:700;margin:18px 0">${data.need}</div>
+      <div style="background:#f7e8df;border-radius:22px;padding:18px;margin:12px 0 20px">
+        ${phrases[data.need]||'Кажется, сейчас особенно нужен именно ты ♡'}
+      </div>
+      <button class="primary" onclick="seePartnerNeed(${data.id})">Я увидел ❤️</button>
+    </div>
+  `);
+}
+
+async function seePartnerNeed(id){
+  await db.from('needs').update({seen:true}).eq('id',id);
+  closeModal();
+  toast('Открытка прочитана ❤️');
+}
 </script>
 </body>
 </html>
