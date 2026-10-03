@@ -144,28 +144,13 @@ async function chooseUser(n){
   location.reload();
 }
 async function restoreLogin(){
-  const {data:{session}}=await db.auth.getSession();
+  const savedUser=localStorage.getItem('ourPlaceUser');
 
-  if(!session){
-    currentUser=null;
-    localStorage.removeItem('ourPlaceUser');
-    return;
-  }
-
-  const email=session.user.email?.toLowerCase();
-
-  if(email==='erikagreb04@gmail.com'){
-    currentUser='Эрика';
-  }else if(email==='oliver.bekeraitis@gmail.com'){
-    currentUser='Оливер';
+  if(savedUser==='Эрика' || savedUser==='Оливер'){
+    currentUser=savedUser;
   }else{
     currentUser=null;
-    localStorage.removeItem('ourPlaceUser');
-    await db.auth.signOut();
-    return;
   }
-
-  localStorage.setItem('ourPlaceUser',currentUser);
 }
 function calcDays(){const n=new Date(),t=new Date(n.getFullYear(),n.getMonth(),n.getDate());const d=Math.max(0,Math.ceil((MEETING_DATE-t)/86400000));days.textContent=d;daysWord.textContent=dayWord(d)}
 function dayWord(n){if(n%100>10&&n%100<20)return'дней';if(n%10===1)return'день';if(n%10>=2&&n%10<=4)return'дня';return'дней'}
