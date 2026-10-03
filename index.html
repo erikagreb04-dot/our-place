@@ -120,10 +120,16 @@ const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 const MEETING_DATE=new Date(2026,10,6);let currentUser=null,selectedMood=null,selectedNeed=null;
 const partner=()=>currentUser==='Эрика'?'Оливер':'Эрика';
 function localDay(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
-function chooseUser(n){
+async function chooseUser(n){
   currentUser=n;
   localStorage.setItem('ourPlaceUser',n);
-  location.reload();
+
+  document.getElementById('login').style.display='none';
+  document.getElementById('app').style.display='block';
+
+  calcDays();
+  await loadAll();
+  startRealtime();
 }
 async function restoreLogin(){
   const savedUser=localStorage.getItem('ourPlaceUser');
