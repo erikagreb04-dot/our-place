@@ -120,27 +120,10 @@ const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 const MEETING_DATE=new Date(2026,10,6);let currentUser=null,selectedMood=null,selectedNeed=null;
 const partner=()=>currentUser==='Эрика'?'Оливер':'Эрика';
 function localDay(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
-async function chooseUser(n){
-  const secret=prompt('Введите секретное слово ♡');
-  if(!secret)return;
-
-  const {data,error}=await db.rpc('check_app_secret',{
-    input_secret:secret.trim()
-  });
-
-  if(error){
-    alert('Ошибка проверки 😭');
-    console.error(error);
-    return;
-  }
-
-  if(!data){
-    alert('Неверное секретное слово ♡');
-    return;
-  }
-
+function chooseUser(n){
   currentUser=n;
   localStorage.setItem('ourPlaceUser',n);
+  location.reload();
 }
 async function restoreLogin(){
   const savedUser=localStorage.getItem('ourPlaceUser');
