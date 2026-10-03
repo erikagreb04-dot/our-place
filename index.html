@@ -368,7 +368,7 @@ async function openPhotos(){
   show(`
     <h2>Наши фото 📸</h2>
     <div class="sub">Наш маленький общий альбом ♡</div>
-
+<div id="photoChallengeCard"></div>
     <div style="margin-top:18px">
       <input id="photoInput" type="file" accept="image/*" style="display:none" onchange="previewPhoto(this)">
       <button class="primary" onclick="document.getElementById('photoInput').click()">
@@ -381,6 +381,7 @@ async function openPhotos(){
   `);
 
   await loadPhotos();
+  renderPhotoChallenge();
 }
 function previewPhoto(input){
   const file=input.files[0];
@@ -496,6 +497,80 @@ function openPhotoBig(url,id){
       </button>
     </div>
   `);
+}
+function renderPhotoChallenge(){
+  const card=document.getElementById('photoChallengeCard');
+  if(!card)return;
+
+  const challenges=[
+    ['🥺','Сфоткай себя с выражением «хочу к тебе»'],
+    ['🧸','Сфотографируй вещь, которая напоминает тебе обо мне'],
+    ['😂','Покажи то, что сегодня тебя рассмешило'],
+    ['👀','Сфотографируй то, что я бы заметил, будь сейчас рядом'],
+    ['☕','Покажи, что прямо сейчас находится перед тобой'],
+    ['🌅','Сфотографируй самый красивый момент своего дня'],
+    ['💙','Найди и сфотографируй что-нибудь моего любимого цвета'],
+    ['🤳','Сделай селфи без подготовки — прямо сейчас'],
+    ['😏','Сделай фото с максимально флиртующим выражением лица'],
+    ['🫣','Покажи что-нибудь немного стыдное или смешное вокруг тебя'],
+    ['👕','Сфотографируй вещь, которую надела бы на наше свидание'],
+    ['🌍','Покажи мне, что ты видишь прямо сейчас'],
+    ['💕','Сфотографируй что-нибудь, что ассоциируется у тебя с нами'],
+    ['🍓','Покажи самое вкусное, что было у тебя сегодня'],
+    ['🛏️','Сфотографируй самое уютное место рядом с тобой'],
+    ['✨','Найди вокруг себя что-нибудь очень красивое'],
+    ['🙈','Сделай максимально дурацкое селфи'],
+    ['💋','Пришли мне воздушный поцелуй'],
+    ['🎒','Покажи одну вещь, которую ты почти всегда носишь с собой'],
+    ['🌙','Сфотографируй свой сегодняшний вечер']
+  ];
+
+  const today=localDay();
+  let seed=0;
+  for(let i=0;i<today.length;i++)seed+=today.charCodeAt(i)*(i+1);
+  const challenge=challenges[seed%challenges.length];
+
+  card.innerHTML=`
+    <div style="
+      margin:20px 0 4px;
+      padding:22px 18px;
+      border-radius:26px;
+      text-align:center;
+      background:linear-gradient(145deg,#f8ddd8,#f3c9d2 52%,#ead8ee);
+      box-shadow:0 10px 28px rgba(115,63,76,.13);
+      border:1px solid rgba(255,255,255,.75);
+      position:relative;
+      overflow:hidden;
+    ">
+      <div style="position:absolute;top:10px;left:14px;font-size:18px;opacity:.55">✦</div>
+      <div style="position:absolute;right:16px;bottom:12px;font-size:22px;opacity:.45">♡</div>
+
+      <div style="
+        font-size:11px;
+        font-weight:800;
+        letter-spacing:2px;
+        color:#9b6070;
+        margin-bottom:10px;
+      ">ФОТО-ЗАДАНИЕ ДНЯ</div>
+
+      <div style="font-size:48px;margin:4px 0 10px">${challenge[0]}</div>
+
+      <div style="
+        font-family:Georgia,serif;
+        font-size:21px;
+        line-height:1.35;
+        color:#493238;
+        max-width:440px;
+        margin:auto;
+      ">${challenge[1]}</div>
+
+      <div style="
+        margin-top:15px;
+        font-size:12px;
+        color:#9b747d;
+      ">одно задание для вас двоих ♡</div>
+    </div>
+  `;
 }
 function home(){closeModal()}
 function esc(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
