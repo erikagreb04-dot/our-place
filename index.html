@@ -364,7 +364,139 @@ async function petAction(type){
  setTimeout(()=>{catLifeBusy=false;if(document.getElementById('petDogPhoto'))openPet();loadPet()},duration);
 }
 async function savePetName(){const name=document.getElementById('petNameInput').value.trim();if(!name)return toast('Дайте псу имя ♡');const{data}=await db.from('our_pet').select('id').limit(1).maybeSingle();if(!data)return;const{error}=await db.from('our_pet').update({name,pet_type:'basenji',updated_at:new Date().toISOString()}).eq('id',data.id);if(error)return toast('Имя не сохранилось 😭');toast('Теперь его зовут '+name+' ♡');loadPet();openPet()}
-function openPhotos(){show(`<h2>Наши фото 📸</h2><div class="sub">Фотостена будет следующим шагом. Для личных фото сначала сделаем безопасное хранение, чтобы они не лежали публично в GitHub.</div>`)}
+async function openPhotos(){
+  show(`
+    <h2>Наши фото 📸</h2>
+    <div class="sub">Наш маленький общий альбом ♡</div>
+
+    <div style="margin-top:18px">
+      <input id="photoInput" type="file" accept="image/*" style="display:none" onchange="previewPhoto(this)">
+      <button class="primary" onclick="document.getElementById('photoInput').click()">
+        ＋ Добавить фото
+      </button>
+    </div>
+
+    <div id="photoPreview" style="margin-top:14px"></div>
+    <div id="photoWall" style="margin-top:18px"></div>
+  `);
+
+  await loadPhotos();
+}
+function previewPhoto(input){
+  const file=input.files[0];
+  if(!file)return;
+
+  const url=URL.createObjectURL(file);
+  document.getElementById('photoPreview').innerHTML=`
+    <div style="background:#fff7f2;padding:12px;border-radius:20px">
+      <img src="${url}" style="width:100%;max-height:300px;object-fit:cover;border-radius:16px">
+      <input id="photoCaption" placeholder="Подпись к фото ♡"
+        style="width:100%;box-sizing:border-box;margin-top:10px;padding:12px;border-radius:14px;border:1px solid #ead8cf">
+      <button class="primary" style="margin-top:10px" onclick="uploadPhoto()">
+        Добавить в наш альбом ❤️
+      </button>
+    </div>
+  `;
+}
+  async function uploadPhoto(){
+  const input=document.getElementById('photoInput');
+  const file=input.files[0];
+  if(!file)return;
+
+  const caption=document.getElementById('photoCaption').value.trim();
+  const ext=file.name.split('.').pop();
+  const path=`${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+
+  toast('Загружаю фото... 📸');
+
+  const {error:uploadError}=await db.storage
+    .from('our-photos')
+    .upload(path,file);
+
+  if(uploadError){
+    toast('Не получилось загрузить 😭');
+    console.error(uploadError);
+    return;
+  }
+
+  const {error:dbError}=await db.from('daily_photos').insert({
+    person:currentUser,
+    photo_url:path,
+    caption:caption
+  });
+
+  if(dbError){
+    toast('Фото загрузилось, но не сохранилось 😭');
+    console.error(dbError);
+    return;
+  }
+
+  toast('Фото в нашем альбоме ❤️');
+  await openPhotos();
+}
+  async function loadPhotos(){
+  const wall=document.getElementById('photoWall');
+  if(!wall)return;
+
+  const {data:photos,error}=await db.from('daily_photos')
+    .select('*')
+    .order('created_at',{ascending:false});
+
+  if(error){
+    console.error(error);
+    wall.innerHTML='<div class="sub">Не получилось загрузить фотографии 😭</div>';
+    return;
+  }
+
+  if(!photos||!photos.length){
+    wall.innerHTML=`
+      <div style="text-align:center;padding:28px 10px">
+        <div style="font-size:44px">📷</div>
+        <div class="sub" style="margin-top:8px">
+          Здесь пока пусто.<br>Добавьте ваше первое фото ♡
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  wall.innerHTML='<div id="photoGrid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px"></div>';
+  const grid=document.getElementById('photoGrid');
+
+  for(const photo of photos){
+    const {data:signed}=await db.storage
+      .from('our-photos')
+      .createSignedUrl(photo.photo_url,3600);
+
+    if(!signed?.signedUrl)continue;
+
+    const card=document.createElement('div');
+    card.style.cssText='background:#fff7f2;padding:7px;border-radius:16px;overflow:hidden';
+    card.innerHTML=`
+      <img src="${signed.signedUrl}"
+        style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:12px;cursor:pointer"
+        onclick="openPhotoBig('${signed.signedUrl}',${photo.id})">
+
+      <div style="padding:7px 3px 3px">
+        <div style="font-size:12px;font-weight:700">${esc(photo.person)}</div>
+        ${photo.caption?`<div style="font-size:13px;margin-top:3px">${esc(photo.caption)}</div>`:''}
+      </div>
+    `;
+    grid.appendChild(card);
+  }
+}
+function openPhotoBig(url,id){
+  show(`
+    <div style="text-align:center">
+      <img src="${url}"
+        style="width:100%;max-height:65vh;object-fit:contain;border-radius:18px">
+
+      <button class="primary" style="margin-top:14px" onclick="openPhotos()">
+        ← Назад к фото
+      </button>
+    </div>
+  `);
+}
 function home(){closeModal()}
 function esc(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 async function checkNeed(){const {data}=await db.from('needs').select('*').eq('person',partner()).eq('day',localDay()).maybeSingle();if(data)toast(partner()+' сейчас хочет: '+data.need)}
