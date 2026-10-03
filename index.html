@@ -830,7 +830,7 @@ function startRealtime(){db.channel('our-place-v3')
 .on('postgres_changes',{event:'INSERT',schema:'public',table:'gifts'},p=>{if(p.new.receiver===currentUser)toast('Для тебя '+p.new.gift+' 💌')})
 .subscribe()}
 window.addEventListener('DOMContentLoaded',async()=>{
-  await restoreLogin();calcDays();setTimeout(checkPartnerNeed,2500);const s=localStorage.getItem('ourPlaceUser');if(s==='Эрика'||s==='Оливер')chooseUser(s)})
+  await restoreLogin();calcDays();setTimeout(checkPartnerNeed,2500);if(currentUser){await loadAll();startRealtime();}})
   async function checkPartnerNeed(){
   if(!currentUser)return;
   const who=partner();
