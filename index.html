@@ -121,37 +121,26 @@ const MEETING_DATE=new Date(2026,10,6);let currentUser=null,selectedMood=null,se
 const partner=()=>currentUser==='Эрика'?'Оливер':'Эрика';
 function localDay(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 async function chooseUser(n){
-  const email=prompt('Email:');
-  if(!email)return;
+  const secret=prompt('Введите секретное слово ♡');
+  if(!secret)return;
 
-  const password=prompt('Пароль:');
-  if(!password)return;
-
-  const {data,error}=await db.auth.signInWithPassword({
-    email:email.trim(),
-    password:password
+  const {data,error}=await db.rpc('check_app_secret',{
+    input_secret:secret.trim()
   });
 
   if(error){
-    alert('Неверный email или пароль');
+    alert('Ошибка проверки 😭');
+    console.error(error);
     return;
   }
 
-  const realEmail=data.user.email?.toLowerCase();
-
-  const realUser=
-    realEmail==='erikagreb04@gmail.com' ? 'Эрика' :
-    realEmail==='oliver.bekeraitis@gmail.com' ? 'Оливер' :
-    null;
-
-  if(!realUser || realUser!==n){
-    await db.auth.signOut();
-    alert('Это аккаунт другого пользователя ♡');
+  if(!data){
+    alert('Неверное секретное слово ♡');
     return;
   }
 
-  currentUser=realUser;
-  localStorage.setItem('ourPlaceUser',realUser);
+  currentUser=n;
+  localStorage.setItem('ourPlaceUser',n);
   location.reload();
 }
 async function restoreLogin(){
