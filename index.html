@@ -249,7 +249,7 @@ const HOUSE_OPTIONS = {
 44: [['💌','Наши письма'],['📸','Фотографии и воспоминания'],['🎁','Маленькие подарки'],['🔐','То, о чём знаем только мы']],
 
 45: [['🏡','Наше гнёздышко'],['❤️','Дом Эрики и Оливера'],['✨','Our Place'],['✍️','Придумаем своё название']],
-46: [['🤍','Не ложиться спать в ссоре'],['🫂','Обниматься каждый день'],['💬','Всегда говорить друг с другом'],['❤️','Любить друг друга даже когда бесим']]
+46: [['🤍','Не ложиться спать в ссоре'],['🫂','Обниматься каждый день'],['💬','Всегда говорить друг с другом'],['❤️','Любить друг друга даже когда бесим']],
 47: [['🏠','Один этаж'],['🏡','Два этажа'],['🏘️','Два этажа + мансарда'],['✨','Небольшой, но просторный']],
 48: [['🪟','Огромные окна в пол'],['🤎','Уютные обычные окна'],['🌅','Панорамные окна с видом'],['🌿','Много окон среди зелени']],
 49: [['🪵','Тёплое дерево'],['🤍','Светлый камень'],['🖤','Современный тёмный фасад'],['🌿','Камень + дерево + растения']],
@@ -400,8 +400,7 @@ async function openPet(){
  show(`<h2>${esc(name)} ♡</h2><div class="sub">Ваш басенджи · растёт вместе с вами.</div>
  <div class="pet-stage">День ${age.days+1} · ${age.label}</div>
 <div class="pet-scene" id="petDogPhoto">
-  <div id="petIdleSprite" class="pet-idle-sprite"></div>
-  <img id="petSceneImg" src="basenji-idle.png" alt="Щенок басенджи" style="display:none">
+  <img id="petSceneImg" src="basenji-idle.png" alt="Щенок басенджи">
 </div>
  <div id="petActionNote" class="pet-action-note">Сейчас отдыхает рядом с вами ♡</div>
  <div class="earned">🥣 Сытость <b>${h}%</b> · ❤️ Счастье <b>${happy}%</b><br>💕 Привязанность <b>${affection}</b></div>
@@ -417,6 +416,19 @@ const PET_FRAMES={
  play:['play-1.jpg','play-2.jpg','play-3.jpg','play-4.jpg','play-5.jpg','play-6.jpg']
 };
 let petFrameTimer=null;
+
+function playPetFrames(type){
+  const img=document.getElementById('petSceneImg');
+  const frames=PET_FRAMES[type]||[];
+  if(!img||!frames.length)return;
+  clearInterval(petFrameTimer);
+  let i=0;
+  img.src=frames[0];
+  petFrameTimer=setInterval(()=>{
+    i=(i+1)%frames.length;
+    img.src=frames[i];
+  },420);
+}
 
 function playPetAnimation(type){
   const img=document.getElementById('petSceneImg');
