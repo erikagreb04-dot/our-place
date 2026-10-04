@@ -881,11 +881,18 @@ function startRealtime(){db.channel('our-place-v3')
 .on('postgres_changes',{event:'INSERT',schema:'public',table:'gifts'},p=>{if(p.new.receiver===currentUser)toast('Для тебя '+p.new.gift+' 💌')})
 .subscribe()}
 window.addEventListener('DOMContentLoaded',async()=>{
-  await restoreLogin();calcDays();setTimeout(checkPartnerNeed,2500);if(currentUser){await loadAll();startRealtime();}})
-if(currentUser){
-  document.getElementById('login').style.display='none';
-  document.getElementById('app').style.display='block';
-}
+  await restoreLogin();
+  calcDays();
+
+  if(currentUser){
+    document.getElementById('login').style.display='none';
+    document.getElementById('app').style.display='block';
+
+    await loadAll();
+    startRealtime();
+    setTimeout(checkPartnerNeed,2500);
+  }
+});
   async function checkPartnerNeed(){
   if(!currentUser)return;
   const who=partner();
